@@ -1,0 +1,194 @@
+Termcap & Curses port by Eric Smith
+	 (7103_300%uwovax.uwo.ca@CORNELLC.CIT.CORNELL.EDU)
+thanks Eric!
+	(to correspond with Eric please put "ATTN: Eric Smith" in the
+	 subject line when sending mail to above address).
+
+07/17/89:: ers
+	initial checkin.
+
+curses.h:: ++jrb
+	added protos. type adjustments due to this in the source
+
+widget/, doc/ :: ++jrb
+	put in widget lib from minix-gcc port
+	put docs in dist.
+
+scanw.c :: ers
+	fixed bug, was calling _scanf(char *, ..) instead of (char **, ..)
+
+*akefile:: ++jrb
+	added targets to make termcap*.olb too from the termcap objects
+
+*akefile:: ++jrb
+	clean target did'nt have $(OTHER) to clean
+
+tstp.c:: ++jrb
+	#if 0'ed out for now till be get the new signal code together
+
+xconsole.c: ers
+	Re-written to be compatible with lib/console.c. It should now
+	work over the RS232 (not tested).
+
+addbytes.c:: ++jrb
+	corrected handling of tabs.
+
+makefile* :: ++jrb
+	adjusted to use common include file mincl (as per lib etc)
+	(Delete old CMakefile.*). makefile.?? and gmakefile.?? new
+	files.
+
+tgetent.c:: ers
+	allowed TERMCAP to have a drive specification, and got rid of
+	the silly "strcmp(TERMCAP, TERM)" test when TERMCAP contains
+	the definition directly (I think what's wanted is a check that
+	the name in TERM matches the name in TERMCAP, but it shouldn't
+	normally be a problem anyways)
+	also: cleaned up the default definition somewhat.
+
+rename:
+	Changelog -> Changelo
+	PatchLevel.h -> Patchlev.h
+
+curses.h:: ++jrb
+	fix up protos
+
+xconsole.c:: ++jrb
+	include <string.h>
+	make kbuf static
+	take out raw_out
+	make ch unsigned
+
+unctrl.c, curses.h:: ++jrb
+	turn uctrl into a function, and save plenty of bytes.
+
+tstp.c:: ++jrb
+	conditionalize the code on __MINT__
+
+isdigit:: ++jrb
+	#if 0 it out
+
+tgetnum, tgetstr, tputs:: ++jrb
+	use <ctype.h> for isdigit()
+
+mincl:: ++jrb
+	take out isdigit.o target
+
+curses.h, putchar.c, cr_puts.c, scroll.c, refresh.c:: ++jrb
+	when not DEBUG, use fputc directly. For tputs use function _fputchar
+	when DEBUG use _putchar.
+
+	use termcap.h
+
+termcap.h:: ++jrb
+	new file with termcap protos
+
+all over:: ++jrb
+	clean up code, add protos, remove unused variables and types.
+	make the code -Wall -Wstrict-prototypes (almost) clean.
+
+todo:: ++jrb
+	make it 8bit char compatible. it will take a bit of doing, especialy
+	in the curses code.
+
+xconsole.c:: Scott Kolodzieski (uunet!sparc1.stevens-tech.edu!scott )
+	new function flush_key_buff(): enables you to stuff the
+	currently accumulated (in the system)  chars to the console
+	buffer. this is important in the situation
+	where you do a fork(), and chars accumulate while in the child
+	process.
+-------------------------- Patchelevel  9 ---------------------------------
+
+xconsole.c:: ++jrb
+	when a key in not alted, return <key>| 0x80 on a alt-key.
+	thanks to scott for this idea.
+
+-------------------------- Patchelevel  10 ---------------------------------
+
+xconsole.c:: ++jrb
+	back out the above change to xconsole as it plays havoc with
+international kbds where some of the more regular keys are entered by
+alt'ing.
+
+-------------------------- Patchlevel  11 ---------------------------------
+
+tgetent.c:: ++jrb
+	update default term entry to the one Michal posted.
+
+xconsole.c:: ++jrb
+	sync up with console.c: alexander lehmann had a
+  fix there for a bug where console i/o would get stuck when a interrupt
+  was caught and it occured when the input buffer was not empty.
+
+tgetent.c:: Michal
+	when I needed it I found that our tgetent routine is buggy since it
+	does not process correctly terminal descriptions with 'tc=...'
+	capabilities.  It will also barf on unlikely but legal termcap files
+	where terminal names are split across escaped lines.  Use of
+	a static fopenp() does not help either, since that means that
+	forms of PATH you can use there are more restrictive than in other
+	places.  Therefore I rewrote that whole file quite a bit.
+	tgetent() now is maybe too permissible but I do not think that
+	it will exclude a valid termcap description.
+
+	One more modification.  When default terminal description is in use
+	then I am filling values for 'co' and 'li' from Line-A variables
+	instead of using a hardwired stuff.
+
+xconsole.c:: ++jrb
+    sync up with lib/console.c again. (andreas's change)
+    -- console.c (raw_in): allow typeahead (which is only available at
+        GEMDOS level).
+
+-------------------------- Patchlevel  12 ---------------------------------
+
+curses.h:: ++jrb
+	#define _putchar _fputchar (defined in putchar.c) instead of
+        the old fputc() which was wrong
+
+curses.h:: ++jrb
+	undo the above change.
+
+xconsole.c:: scott
+	We were doning a dev=LOOKUP(handle) in console_write_byte, than again 
+	in flush_key_buff()
+
+-------------------------- Patchlevel  13 ---------------------------------
+
+clrtobot.c, erase.c, initscr.c, mincl, termcap.h, tputs.c, tstp.c:: ers
+	cleanup, casts etc
+
+xconsole.c:: ers
+	approximation for console_set_key functionality for MiNT using
+	ioctl(..., XKEY) (MiNT 0.94 or better required for this).
+
+name chances
+	mv id_subwin.c id_subwi.c
+	mv overwrite.c overwrit.c
+	mv toucholap.c touchola.c
+-------------------------- Patchlevel  14 ---------------------------------
+
+tgetnum.c, tgetent.c:: scott/jrb
+	pay attention to LINES/COLUMNS in the environment. when making
+	the default entry first look in the env, failing which hit
+	linea0() for li/co. if only one of li or co are in the env,
+	then the other is still gotten from linea0().
+
+ident: ++jrb
+	ident.c  new file with Patchlevel for ident(1)
+
+mincl: ++jrb
+	add ident.o
+
+-------------------------- Patchlevel  15 ---------------------------------
+
+tgetnum.c:: ers
+	the tgetnum() function was crashing if it was asked to get
+	a numerical capability that wasn't in the termcap entry.
+
+Makefile mincl:: ers/++jrb
+	convert to new integrated Makefile format.
+	
+	DELETE makefile.16 makefile.32 gmakefile.??
+
+-------------------------- Patchlevel  16 ---------------------------------

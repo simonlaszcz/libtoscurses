@@ -1,0 +1,189 @@
+.TH PUZZLE15 6
+.UC 4
+.SH NAME
+puzzle15 \- simulate a well known toy with many variations
+.SH SYNOPSIS
+.br
+.B puzzle15
+[<width[x<height>]]
+[movemethod]
+[cursormethod]
+[facemethod]
+.SH DESCRIPTION
+.I Puzzle15
+simulates a game that is available in many toy shops. This computerized
+version is crt-oriented and offers fewer possibilities for cheating. 
+.br
+When invoked without arguments
+.I puzzle15
+presents a 4 by 4 grid with 15 numbered tiles and one empty square.
+The tiles are not ordered in sequence.
+The tiles adjacent to the empty square can exchange places with the
+empty square. This is done by indicating the direction that the empty 
+square is to move with the vi(1) cursor keys (k for up, j for down, 
+h for left and l for right). 
+.br
+The intention of the game is to rearrange the tiles in their ``natural''
+sequence. 
+.PP
+The program keeps track of the time and the number of moves used.
+This makes it possible to arrange competitions where time, or the
+number of moves used determines the winner.
+.PP
+The program ends when the tiles are arranged in sequence, or when you
+type your interrupt character (usually ctrl-C or break). On computers
+that lack good support for keyboard interrupts a key can be selected 
+that will terminate the program. (This is a compile-time option.)
+.SH VARIATIONS
+The look and feel of the program can be altered by specifying different
+dimensions for the array, the way that the tile to move is selected
+(movemethod), the keys that specify where the cursor is to go 
+(cursormethod) and the faces that are shown on the tiles (facemethod).
+.SH DIMENSIONS
+The dimensions of the board can be varied within the limits of your
+terminal screen. To obtain a square array a single numeric argument
+is required. 
+.I Puzzle15 
+.I 3
+presents a 3x3 array with 8 numbered tiles. With numbered tiles it
+is not possible to extend the array beyond 10 by 10, because only two
+digits are used to identify each tile.
+.PP
+To obtain a non-square array an argument that consists of a number, 
+the character 'x' and another number must be supplied.
+.I Puzzle15
+.I 6x3
+presents a grid that is 6 columns wide and 3 rows high with 17
+numbered tiles.
+.SH MOVEMETHODS
+The default movemethod is to indicate the direction that the empty
+(blank) field is to move. This is called
+.I moveblank.
+There are two other methods that can be selected by an argument on the
+command line.
+.br
+.I Movetile
+tells 
+.I puzzle15
+that you want to indicate the direction that an adjacent tile is to be 
+moved. This is equivalent to reversal of the directions of the cursor 
+keys.
+.br
+.I Selecttile
+tells
+.I puzzle15
+that you want to indicate the new position of the empty field by
+moving the cursor to that position and then typing a <space>, or
+<return> (or whatever you like). In this way you can move several
+tiles in one blow.
+.SH CURSORMETHODS
+The default way to move the cursor or the empty field is to use the
+vi(1) cursor keys.
+.br
+On some computers it is possible to specify
+.I arrowkeys,
+which tells 
+.I puzzle15
+to use the arrow keys of your terminal to specify a move. 
+.br
+If you specify 
+.I numberkeys
+on the command line, 
+.I puzzle15 
+will use '8' for up, '2' for down, '4' for left and '6' for right.
+this corresponds to arrows on the numeric key pad of most personal 
+computers.
+.br
+Another way to specify where the empty field is to go is obtained by
+specifying
+.I facekeys
+on the command line. In this mode you move the empty field to a new
+position by typing the character(s) shown on the tile that currently
+occupies that position. 
+.I Facekeys
+implies use of the movemethod 
+.I selecttile.
+If the
+.I facekeys
+cursormethod is used with numbered tiles, some tile numbers are shown
+with leading zero. To select such a tile a leading zero is required.
+Tiles that are labeled with a single digit can be selected with that
+digit, or with a leading zero followed by that digit.
+.br
+Finally you can specify your own cursor movement keys with
+.I keys
+.I <up><down><left><right>
+on the command line. <Up> is the key that you will use to move
+up, etc.
+.SH FACEMETHODS
+The default way that
+.I puzzle15
+uses to identify the tiles is to number them. If you prefer
+tiles that are marked with letters you must specify
+.I alphafaces
+on the command line. 
+.I Puzzle15
+will now use the lower-case letters a..z to identify the tiles.
+.br
+Similarly, if you specify
+.I numberalphafaces
+.I puzzle15
+will use the digits 0..9 followed by the lower-case letters a..z to
+identify the tiles.
+.br
+.I Alphanumberfaces
+selects the lower-case letters a..z followed by the digits 0..9.
+.br
+Finally, you can specify the characters to use on the command line with
+.I faces
+.I <facecharacters>.
+The order in
+.I <facecharacters>
+will be used to determine when the tiles are ordered.
+.SH EXAMPLES
+.I puzzle15 
+.I faces 
+.I '1234567890qwertyuiopasdfghjkl;zxcvbnm,.'
+.I 10x4 
+.br
+creates a 10 by 4 array filled with the symbols of a typewriter 
+keyboard. The position to achieve is the ordering of the keys on
+the typewriter. Quoting is necessary to prevent the shell from
+treating the ``;'' as a special character. By adding the option
+.I facekeys
+the program turns into a tough typing tutor, especially if you decide
+not to take your eyes off the screen.
+.SH DIAGNOSTICS
+An unknown keyword or an illegal combination of keywords on the command
+line generates a complete list of possible keywords and restrictions on
+their combinations.
+.br
+If you type an undefined key during the game, the program lists the keys
+that are valid.
+.br
+On startup fatal diagnostics from the curses screen handling package
+are possible if your terminal is ill-defined.
+.br
+If the program detects an internal error a diagnostic starting with the
+letters
+.I aargh:
+is printed. If you manage to get one of these, I like to know how
+you did it.
+.SH AUTHOR
+P. Knoppers - knop@duteca.UUCP.
+.br
+Paul Lew added arrow keys.
+.br
+Bo Kullmar added the clock and the move counter.
+.br
+Larry Hastings suggested the selecttile method.
+.SH COPYRIGHT
+The
+.I puzzle15
+program is protected by copyright (C) 1984, 1988, 1989 by P. Knoppers. 
+Distribution of unmodified copies of the program with source is unrestricted. 
+You are not allowed to distribute modified copies. This is to prevent 
+uncontrolled spreading of a zillion different versions. 
+You can mail suggestions for improvements to me. I 
+.I may
+incorporate them in a future version.

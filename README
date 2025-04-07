@@ -1,0 +1,17 @@
+This is Eric Smith's curses/termcap library for gcc TOS. Thanks Eric!
+
+	- see the file src/ChangeLog first.
+	- documentation is in doc/
+	   printer ready docs are in doc/Curses.doc
+	- widget/	is a port of Richard Culshaw's widget library. See the
+			file widget/README first.
+
+your comments/suggestions are always welcome:
+--
+Eric Smith
+7103_300%uwovax.uwo.ca@CORNELLC.CIT.CORNELL.EDU
+(please put "Attn: Eric Smith in subject line)
+
+bang:   {any internet host}!dsrgsun.ces.CWRU.edu!bammi	jwahar r. bammi
+domain: bammi@dsrgsun.ces.CWRU.edu
+GEnie:	J.Bammi

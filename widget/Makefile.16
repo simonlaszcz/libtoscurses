@@ -1,0 +1,53 @@
+#
+#
+#
+#
+
+#/*****************************************************************************
+#/*  FILE:		makefile
+#/*  DATE:		August 1988.
+#/*  AUTHOR:		Richard A. Culshaw.
+#/* DISCLAIMER:		This file is deemed to be public-domain, on the simple
+#/*			provisos that this section remains in this file and
+#/*			that code using it do not do so for monetary gain.
+#/*			Neither the author, nor the authors employees at the
+#/*			time of developing this code, accept any liability or
+#/*			responsibility for the use, abuse or misuse of this
+#/*			code.
+#/*****************************************************************************/
+
+CROSSDIR = /net/acae127/home/bammi/atari/cross-gcc
+CROSSLIB = $(CROSSDIR)/lib
+CROSSBIN = $(CROSSDIR)/bin
+
+# Use -g if you want large, but sdb-,gdb-,dbx-able objects.
+OPTIONS= -O2 -I. -fomit-frame-pointer -mshort
+CFLAGS = $(OPTIONS)
+CC = $(CROSSBIN)/cgcc
+AR = $(CROSSBIN)/car
+
+# BSD systems, in particular, will want -lcurses -ltermcap.
+CURSES=  -lcurses16
+
+# SYS5 systems, in particular, do not have ranlib(1) for their libraries.
+# So define this as, for example, touch, if you don't have ranlib.
+RANLIB=
+
+WDGTLIB= widget16.olb
+
+all: ${WDGTLIB}
+
+widget16.olb: widgetlib.o ident.o widget.h
+	rm -f $@
+	$(AR) rvs $@ widgetlib.o ident.o
+
+wpage:  wpage.o
+	$(CC) ${OPTIONS} -o $@ wpage.o -lwidget16 ${CURSES}
+
+clean:
+	rm -f wpage *.o widget16.olb
+
+widgetlib.o : widgetlib.c widget.h
+wpage.o : wpage.c widget.h always
+#dummy
+always:

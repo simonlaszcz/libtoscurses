@@ -1,0 +1,40 @@
+# Makefile for the GCC curses/termcap library (32 bit int default)
+
+CC= d:\gnu\bin\gcc.ttp
+CPP=d:\gnu\bin\gcc-cpp.ttp
+AR= d:\gnu\bin\gcc-ar.ttp
+AS= $(CC)
+LIB = d:\gnu\lib
+INC = d:\gnu\include
+
+MODEL =
+DEFINES = -DDGK -DGEMDOS
+COPTS= -O -fomit-frame-pointer -fstrength-reduce \
+ -DNDEBUG $(DEFINES) $(XFLAGS)
+
+# normal CFLAGS
+CFLAGS= $(MODEL) $(COPTS)
+
+# CFLAGS sans -fomit-frame-pointer
+CFFLAGS = $(MODEL) -O -DNDEBUG
+
+# cflags for stuff that needs to be compiled with 32 bit ints
+# (this def is needed for the common include file)
+CLFLAGS= $(CFLAGS)
+
+# flags to $(CC) when it runs the assembler only
+ASFLAGS= -c
+
+# pre-processor flags
+PPFLAGS= -P -DNDEBUG
+
+# library targets
+CURSES= mcurses.olb
+TERMCAP = mtermcap.olb
+
+# the stuff to make
+ALL= $(CURSES) $(TERMCAP)
+
+TESTS = testtcp.ttp twinkle.ttp worms.ttp
+
+include mincl
