@@ -1,0 +1,49 @@
+/*****************************************************************************
+/*  FILE:		README
+/*  DATE:		August 1988.
+/*  AUTHOR:		Richard A. Culshaw.
+/* DISCLAIMER:		This file is deemed to be public-domain, on the simple
+/*			provisos that this section remains in this file and
+/*			that code using it do not do so for monetary gain.
+/*			Neither the author, nor the authors employees at the
+/*			time of developing this code, accept any liability or
+/*			responsibility for the use, abuse or misuse of this
+/*			code.
+/*****************************************************************************/
+
+	Widgetlib is a standard C library which allows the user to define
+and interact with widgets (window gadget). The files provided are:
+
+-rw-r--r--   1 pjs      net         1960 Oct 14 13:25 README
+-rw-r--r--   1 pjs      net         1144 Oct 14 13:23 makefile
+-rw-r--r--   1 pjs      net         2752 Oct 14 13:15 widget.h
+-rw-r--r--   1 pjs      net        10946 Oct 14 12:18 widget.ms
+-rw-r--r--   1 pjs      net        34817 Oct 14 13:15 widgetlib.c
+-rw-r--r--   1 pjs      net         3218 Oct 14 13:14 wpage.c
+
+1) widgetlib.c       (the actual code)
+2) widget.h	     (the header file which is needed in programs intending
+		      to incorporate the library)
+3) widget.ms	     (an explanation of the library and how to use it)
+4) wpage.c	     (a little example of the library in use)
+5) makefile          (compiles everything together)
+
+Compiling things
+================
+
+Type 'make' within the directory which contains the files.
+This creates a local library within the directory, and creates the 
+executable 'wpage' (a demo for you to play with).
+
+For general use 'widget.h' must be placed in the standard include directory
+and the library 'widgetlib.a' must go in a globally accessable place such
+as /usr/lib.
+
+Printing doc
+============
+
+'widget.ms' was created using the ms macros and can printed using something like
+'nroff -ms widget.ms'
+
+
+Have fun. Richard C.

@@ -1,0 +1,12 @@
+I have applied some of the suggestions put to me by various persons
+(acknowledged in the program text). The program can be compiled with
+the option -DARROWKEYS, but I am not sure that it works - I cannot
+test it. The other compile-time options have been tested and they work.
+
+In the following shell archive you will find the source of the program
+and a manual page in [nt]roff -man format.
+
+Since the previous version I have moved to another machine. My email
+address is now knop@duteca.UUCP. Mail to the previous machine may not
+bounce, in which case it might appear in my mailbox on the new machine.
+
