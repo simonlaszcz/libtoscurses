@@ -15,49 +15,39 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)scanw.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-/*
- * scanw and friends
- *
- */
-
-# include	"curses.ext"
-# include <string.h>
-# include <stdarg.h>
+#include "internal.h"
+#include <string.h>
+#include <stdarg.h>
 
 /*
  *	This routine implements a scanf on the standard screen.
  */
-#ifdef __STDC__
-int scanw(char *fmt, ...)
-#else
-scanw(fmt)
-char	*fmt;
-#endif
+int
+scanw(char *fmt, ...)
 {
     va_list argp;
-
     va_start(argp, fmt);
-    return _sscans(stdscr, fmt, argp);
+    int rv = _sscans(stdscr, fmt, argp);
+    va_end(argp);
+
+    return rv;
 }
+
 /*
  *	This routine implements a scanf on the given window.
  */
-#ifdef __STDC__
-int wscanw(WINDOW *win, char *fmt, ...)
-#else
-wscanw(win, fmt, args)
-WINDOW	*win;
-char	*fmt;
-#endif
+int
+wscanw(WINDOW *win, char *fmt, ...)
 {
-    va_list argp;
+    if (win == NULL)
+        return ERR;
 
+    va_list argp;
     va_start(argp, fmt);
-    return _sscans(win, fmt, argp);
+    int rv = _sscans(win, fmt, argp);
+    va_end(argp);
+
+    return rv;
 }
 
 #ifdef atarist
@@ -67,22 +57,22 @@ char	*fmt;
  */
 
 static int sgetc(s)
-	unsigned char **s;
-	{
-	register unsigned char c;
+    unsigned char **s;
+    {
+    register unsigned char c;
 
-	c = *(*s)++;
-	return((c == '\0') ? EOF : c);
-	}
+    c = *(*s)++;
+    return((c == '\0') ? EOF : c);
+    }
 
 static int sungetc(c, s)
-	int c;
-	unsigned char **s;
-	{
-	if(c == EOF)
-		c = '\0';
-	return(*--(*s) = c);
-	}
+    int c;
+    unsigned char **s;
+    {
+    if(c == EOF)
+        c = '\0';
+    return(*--(*s) = c);
+    }
 
 #ifdef __STDC__
 int _sscans(WINDOW *win, char *fmt, ...)
@@ -92,17 +82,17 @@ WINDOW	*win;
 char	*fmt;
 #endif
 {
-	char buf[128], *junk;
-	extern int _scanf();
-	va_list argp;
-	
-	if (wgetstr(win, buf) < 0)
-		return ERR;
-	va_start(argp, fmt);
-	junk = buf;
-	return(_scanf(&junk, sgetc, sungetc, fmt, argp));
+    char buf[128], *junk;
+    extern int _scanf();
+    va_list argp;
+    
+    if (wgetstr(win, buf) < 0)
+        return ERR;
+    va_start(argp, fmt);
+    junk = buf;
+    return(_scanf(&junk, sgetc, sungetc, fmt, argp));
 }
-	
+    
 #else /* original BSD routines */
 
 /*
@@ -123,16 +113,16 @@ char	*fmt;
 #endif
 {
 
-	char	buf[100];
-	FILE	junk;
-	va_list argp;
-	
-	junk._flag = _IOREAD|_IOSTRG;
-	junk._base = junk._ptr = buf;
-	if (wgetstr(win, buf) == ERR)
-		return ERR;
-	va_start(argp, fmt);
-	junk._cnt = strlen(buf);
-	return _doscan(&junk, fmt, argp);
+    char	buf[100];
+    FILE	junk;
+    va_list argp;
+    
+    junk._flag = _IOREAD|_IOSTRG;
+    junk._base = junk._ptr = buf;
+    if (wgetstr(win, buf) == ERR)
+        return ERR;
+    va_start(argp, fmt);
+    junk._cnt = strlen(buf);
+    return _doscan(&junk, fmt, argp);
 }
 #endif /* atarist */

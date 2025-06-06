@@ -15,41 +15,37 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)clrtoeol.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
 
-# include	"curses.ext"
-
-/*
- *	This routine clears up to the end of line
- *
+/**
+ * This routine clears to the end of line from the cursor
  */
-void wclrtoeol(win)
-reg WINDOW	*win; {
+int
+wclrtoeol(WINDOW *win)
+{
+    tracev1("win=%p", win);
 
-	reg char	*sp, *end;
-	reg int		y, x;
-	reg char	*maxx;
-	reg int		minx;
+    if (win == NULL)
+        return ERR;
 
-	y = win->_cury;
-	x = win->_curx;
-	end = &win->_y[y][win->_maxx];
-	minx = _NOCHANGE;
-	maxx = &win->_y[y][x];
-	for (sp = maxx; sp < end; sp++)
-		if (*sp != ' ') {
-			maxx = sp;
-			if (minx == _NOCHANGE)
-				minx = sp - win->_y[y];
-			*sp = ' ';
-		}
-	/*
-	 * update firstch and lastch for the line
-	 */
-	touchline(win, y, win->_curx, win->_maxx - 1);
-# ifdef DEBUG
-	fprintf(outf, "CLRTOEOL: minx = %d, maxx = %d, firstch = %d, lastch = %d\n", minx, maxx - win->_y[y], win->_firstch[y], win->_lastch[y]);
-# endif
+    chtype *sp = &(win->_y[win->_cury][win->_curx]);
+    chtype *ep = &(win->_y[win->_cury][win->_maxx]);
+    tracev1("win=%p, cury=%d, curx=%d", win, win->_cury, win->_curx);
+
+    while (sp < ep)
+        *sp++ = win->_bkgd;
+
+    int chidx = win->_maxx - 1 + win->_ch_off;
+    win->_lastch[win->_cury] = chidx;
+
+    chidx = win->_curx + win->_ch_off;
+    if (win->_firstch[win->_cury] == _NOCHANGE || chidx < win->_firstch[win->_cury])
+        win->_firstch[win->_cury] = chidx; 
+
+    tracev1("win=%p, firstch=%d, lastch=%d",
+        win,
+        win->_firstch[win->_cury] - win->_ch_off,
+        win->_lastch[win->_cury] - win->_ch_off);
+
+    return OK;
 }

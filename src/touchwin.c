@@ -15,53 +15,44 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)touchwin.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+#include "internal.h"
 
 /*
  * make it look like the whole window has been changed.
  *
  */
-void touchwin(win)
-register WINDOW	*win;
+int
+touchwin(WINDOW *win)
 {
-	register int	y, maxy;
-
-# ifdef	DEBUG
-	fprintf(outf, "TOUCHWIN(%0.2o)\n", win);
-# endif
-	maxy = win->_maxy;
-	for (y = 0; y < maxy; y++)
-		touchline(win, y, 0, win->_maxx - 1);
+    tracev1("win=%p", win);
+    if (win == NULL)
+        return ERR;
+    return touchline(win, 0, win->_maxy);
 }
 
 /*
  * touch a given line
  */
-void touchline(win, y, sx, ex)
-register WINDOW	*win;
-register int	y, sx, ex;
+int
+touchline(WINDOW *win, int start, int count)
 {
-# ifdef DEBUG
-	fprintf(outf, "TOUCHLINE(%0.2o, %d, %d, %d)\n", win, y, sx, ex);
-	fprintf(outf, "TOUCHLINE:first = %d, last = %d\n", win->_firstch[y], win->_lastch[y]);
-# endif
-	sx += win->_ch_off;
-	ex += win->_ch_off;
-	if (win->_firstch[y] == _NOCHANGE) {
-		win->_firstch[y] = sx;
-		win->_lastch[y] = ex;
-	}
-	else {
-		if (win->_firstch[y] > sx)
-			win->_firstch[y] = sx;
-		if (win->_lastch[y] < ex)
-			win->_lastch[y] = ex;
-	}
-# ifdef	DEBUG
-	fprintf(outf, "TOUCHLINE:first = %d, last = %d\n", win->_firstch[y], win->_lastch[y]);
-# endif
+    tracev1("win=%p, start=%d, count=%d", win, start, count);
+    if (win == NULL)
+        return ERR;
+
+    if (start < 0)
+        start = 0;
+    int end = start + count;
+    if (end > win->_maxy)
+        end = win->_maxy;
+
+    int sx = win->_ch_off;
+    int ex = win->_ch_off + win->_maxx - 1;
+
+    for (int y = start; y < end; ++y) {
+        win->_firstch[y] = sx;
+        win->_lastch[y] = ex;
+    }
+
+    return OK;
 }

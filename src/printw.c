@@ -15,52 +15,42 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)printw.c	5.4 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-/*
- * printw and friends
- *
- */
-# include	"curses.ext"
-# include <stdarg.h>
+#include "internal.h"
+#include <stdarg.h>
 
 /*
  *	This routine implements a printf on the standard screen.
  */
-#ifdef __STDC__
-int printw(char *fmt, ...)
-#else
-int printw(fmt)
-char	*fmt;
-#endif
+int
+printw(char *fmt, ...)
 {
+    char	buf[512];
+    va_list argp;
+    
+    va_start(argp, fmt);
+    (void)vsprintf(buf, fmt, argp);
+    int rv = waddstr(stdscr, buf);
+    va_end(argp);
 
-	char	buf[512];
-	va_list argp;
-	
-	va_start(argp, fmt);
-	(void) vsprintf(buf, fmt, argp);
-	return waddstr(stdscr, buf);
+    return rv;
 }
 
 /*
  *	This routine implements a printf on the given window.
  */
-#ifdef __STDC__
-int wprintw(WINDOW *win, char *fmt, ...)
-#else
-int wprintw(win, fmt, args)
-WINDOW	*win;
-char	*fmt;
-#endif
+int
+wprintw(WINDOW *win, char *fmt, ...)
 {
+    if (win == NULL)
+        return ERR;
 
-	char	buf[512];
-	va_list argp;
-	
-	va_start(argp, fmt);
-	(void) vsprintf(buf, fmt, argp);
-	return waddstr(win, buf);
+    char	buf[512];
+    va_list argp;
+    
+    va_start(argp, fmt);
+    (void)vsprintf(buf, fmt, argp);
+    int rv = waddstr(win, buf);
+    va_end(argp);
+
+    return rv;
 }

@@ -15,11 +15,7 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)overlay.c	5.5 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+# include	"internal.h"
 # include	<ctype.h>
 
 # define	min(a,b)	(a < b ? a : b)
@@ -29,34 +25,34 @@ static char sccsid[] = "@(#)overlay.c	5.5 (Berkeley) 6/30/88";
  *	This routine writes win1 on win2 non-destructively.
  *
  */
-void overlay(win1, win2)
-reg WINDOW	*win1, *win2; {
+void
+overlay(WINDOW *win1, WINDOW *win2)
+{
+    reg chtype	*sp, *end;
+    reg int		x, y, endy, endx, starty, startx;
+    reg int 	y1,y2;
 
-	reg char	*sp, *end;
-	reg int		x, y, endy, endx, starty, startx;
-	reg int 	y1,y2;
-
-# ifdef DEBUG
-	fprintf(outf, "OVERLAY(%0.2o, %0.2o);\n", win1, win2);
+# ifdef DEBUGL1
+    fprintf(outf, "OVERLAY(%0.2o, %0.2o);\n", win1, win2);
 # endif
-	starty = max(win1->_begy, win2->_begy);
-	startx = max(win1->_begx, win2->_begx);
-	endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
-	endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
-# ifdef DEBUG
-	fprintf(outf, "OVERLAY:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
+    starty = max(win1->_begy, win2->_begy);
+    startx = max(win1->_begx, win2->_begx);
+    endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
+    endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
+# ifdef DEBUGL1
+    fprintf(outf, "OVERLAY:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
 # endif
-	if (starty >= endy || startx >= endx)
-		return;
-	y1 = starty - win1->_begy;
-	y2 = starty - win2->_begy;
-	for (y = starty; y < endy; y++, y1++, y2++) {
-		end = &win1->_y[y1][endx - win1->_begx];
-		x = startx - win2->_begx;
-		for (sp = &win1->_y[y1][startx - win1->_begx]; sp < end; sp++) {
-			if (!isspace(*sp))
-				mvwaddch(win2, y2, x, *sp);
-			x++;
-		}
-	}
+    if (starty >= endy || startx >= endx)
+        return;
+    y1 = starty - win1->_begy;
+    y2 = starty - win2->_begy;
+    for (y = starty; y < endy; y++, y1++, y2++) {
+        end = &win1->_y[y1][endx - win1->_begx];
+        x = startx - win2->_begx;
+        for (sp = &win1->_y[y1][startx - win1->_begx]; sp < end; sp++) {
+            if (!isspace(*sp))
+                mvwaddch(win2, y2, x, *sp);
+            x++;
+        }
+    }
 }

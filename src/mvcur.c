@@ -15,24 +15,18 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)idlok.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
+#include "vt52.h"
 
-# include	"curses.ext"
-
-/*
- * idlok:
- *	Turn on and off using insert/deleteln sequences for the given
- *	window.
- *
- */
-void idlok(win, bf)
-register WINDOW	*win;
-bool		bf;
+int
+mvcur(UNUSED int oldrow, UNUSED int oldcol, int newrow, int newcol)
 {
-	if (bf)
-		win->_flags |= _IDLINE;
-	else
-		win->_flags &= ~_IDLINE;
+    tracev1("y=%d, x=%d", newrow, newcol);
+
+    if (newrow < 0 || newcol >= COLS || newrow < 0 || newrow >= LINES)
+        return ERR;
+
+    MVCURSOR(newrow, newcol);
+
+    return OK;
 }

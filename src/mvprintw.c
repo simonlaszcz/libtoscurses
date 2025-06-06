@@ -15,11 +15,7 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)mvprintw.c	5.4 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+# include	"internal.h"
 # include <stdarg.h>
 
 /*
@@ -28,41 +24,26 @@ static char sccsid[] = "@(#)mvprintw.c	5.4 (Berkeley) 6/30/88";
  *
  */
 
-#ifdef __STDC__
 int mvprintw(int y, int x, char *fmt, ...)
-#else
-int mvprintw(y, x, fmt)
-reg int		y, x;
-char		*fmt;
-#endif
 {
+    char	buf[512];
+    va_list argp;
 
-	char	buf[512];
-	va_list argp;
-
-	if (move(y, x) != OK)
-		return ERR;
-	va_start(argp, fmt);
-	(void) vsprintf(buf, fmt, argp);
-	return waddstr(stdscr, buf);
+    if (move(y, x) != OK)
+        return ERR;
+    va_start(argp, fmt);
+    (void) vsprintf(buf, fmt, argp);
+    return waddstr(stdscr, buf);
 }
 
-#ifdef __STDC__
 int mvwprintw(WINDOW *win, int y, int x, char *fmt, ...)
-#else
-int mvwprintw(win, y, x, fmt)
-reg WINDOW	*win;
-reg int		y, x;
-char		*fmt;
-#endif
 {
+    char	buf[512];
+    va_list argp;
 
-	char	buf[512];
-	va_list argp;
-
-	if (move(y, x) != OK)
-		return ERR;
-	va_start(argp, fmt);
-	(void) vsprintf(buf, fmt, argp);
-	return waddstr(win, buf);
+    if (move(y, x) != OK)
+        return ERR;
+    va_start(argp, fmt);
+    (void) vsprintf(buf, fmt, argp);
+    return waddstr(win, buf);
 }

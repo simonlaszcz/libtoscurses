@@ -15,27 +15,29 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)endwin.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
 /*
  * Clean things up before exiting
- *
  */
 
-# include	"curses.ext"
+#include "internal.h"
+#include <stdio.h>
+#include "vt52.h"
 
-void endwin()
+int
+endwin(void)
 {
-	resetty();
-	_puts(VE);
-	_puts(TE);
-	if (curscr) {
-		if (curscr->_flags & _STANDOUT) {
-			_puts(SE);
-			curscr->_flags &= ~_STANDOUT;
-		}
-		_endwin = TRUE;
-	}
+    restore_getch();
+    restore_color();
+
+    SANE();
+    PUT('\r');
+    PUT('\n');
+    fflush(stdout);
+
+#ifdef DEBUG
+    if (xyz_trace_file != NULL)
+        fclose(xyz_trace_file);
+#endif
+
+    return OK;
 }

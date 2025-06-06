@@ -79,13 +79,8 @@ char   *release3 = "Distribution of modified copies is NOT allowed";
 unsigned long   Time_start;
 int     Movecnt = 0;
 
-#ifdef __STDC__
 void   *malloc (unsigned);		/* to satisfy lint */
 long    time (long *);
-#else
-char   *malloc ();		/* to satisfy lint */
-long    time ();
-#endif
 
 int     Sizex = UNSPECIFIED;	/* x-size of the board */
 int     Sizey = UNSPECIFIED;	/* y-size of the board */

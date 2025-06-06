@@ -15,20 +15,20 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)clear.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
 
-# include	"curses.ext"
-
-/*
- *	This routine clears the window.
- *
+/**
+ * This routine clears the window.
  */
-int wclear(win)
-reg WINDOW	*win; {
+int
+wclear(WINDOW *win)
+{
+    tracev1("win=%p", win);
 
-	werase(win);
-	win->_clear = TRUE;
-	return OK;
+    if (win == NULL || werase(win) == ERR)
+        return ERR;
+
+    win->_clear = true;
+
+    return OK;
 }

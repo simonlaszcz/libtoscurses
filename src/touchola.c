@@ -15,11 +15,7 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)toucholap.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+# include	"internal.h"
 
 # define	min(a,b)	(a < b ? a : b)
 # define	max(a,b)	(a > b ? a : b)
@@ -31,27 +27,26 @@ static char sccsid[] = "@(#)toucholap.c	5.3 (Berkeley) 6/30/88";
 void touchoverlap(win1, win2)
 reg WINDOW	*win1, *win2; {
 
-	reg int		y, endy, endx, starty, startx;
+    reg int		endy, endx, starty, startx;
 
-# ifdef DEBUG
-	fprintf(outf, "TOUCHOVERLAP(%0.2o, %0.2o);\n", win1, win2);
+# ifdef DEBUGL1
+    fprintf(outf, "TOUCHOVERLAP(%0.2o, %0.2o);\n", win1, win2);
 # endif
-	starty = max(win1->_begy, win2->_begy);
-	startx = max(win1->_begx, win2->_begx);
-	endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
-	endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
-# ifdef DEBUG
-	fprintf(outf, "TOUCHOVERLAP:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
-	fprintf(outf, "TOUCHOVERLAP:win1 (%d,%d) to (%d,%d)\n", win1->_begy, win1->_begx, win1->_begy + win1->_maxy, win1->_begx + win1->_maxx);
-	fprintf(outf, "TOUCHOVERLAP:win2 (%d,%d) to (%d,%d)\n", win2->_begy, win2->_begx, win2->_begy + win2->_maxy, win2->_begx + win2->_maxx);
+    starty = max(win1->_begy, win2->_begy);
+    startx = max(win1->_begx, win2->_begx);
+    endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
+    endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
+# ifdef DEBUGL1
+    fprintf(outf, "TOUCHOVERLAP:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
+    fprintf(outf, "TOUCHOVERLAP:win1 (%d,%d) to (%d,%d)\n", win1->_begy, win1->_begx, win1->_begy + win1->_maxy, win1->_begx + win1->_maxx);
+    fprintf(outf, "TOUCHOVERLAP:win2 (%d,%d) to (%d,%d)\n", win2->_begy, win2->_begx, win2->_begy + win2->_maxy, win2->_begx + win2->_maxx);
 # endif
-	if (starty >= endy || startx >= endx)
-		return;
-	starty -= win2->_begy;
-	startx -= win2->_begx;
-	endy -= win2->_begy;
-	endx -= win2->_begx;
-	endx--;
-	for (y = starty; y < endy; y++)
-		touchline(win2, y, startx, endx);
+    if (starty >= endy || startx >= endx)
+        return;
+    starty -= win2->_begy;
+    startx -= win2->_begx;
+    endy -= win2->_begy;
+    endx -= win2->_begx;
+    endx--;
+    touchline(win2, starty, endy - starty);
 }

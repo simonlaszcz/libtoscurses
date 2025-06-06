@@ -15,35 +15,38 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)box.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+#include "internal.h"
 
 /*
- *	This routine draws a box around the given window with "vert"
+ * This routine draws a box around the given window with "vert"
  * as the vertical delimiting char, and "hor", as the horizontal one.
  *
  */
-void box(win, vert, hor)
-reg WINDOW	*win;
-int		vert, hor; {
+int
+box(WINDOW *win, chtype vert, chtype hor)
+{
+    tracev1("win=%p, vert=%ld, hor=%ld", win, vert, hor);
 
-	reg int		i;
-	reg int		endy, endx;
-	reg char	*fp, *lp;
+    if (win == NULL)
+        return ERR;
 
-	endx = win->_maxx;
-	endy = win->_maxy - 1;
-	fp = win->_y[0];
-	lp = win->_y[endy];
-	for (i = 0; i < endx; i++)
-		fp[i] = lp[i] = hor;
-	endx--;
-	for (i = 0; i <= endy; i++)
-		win->_y[i][0] = (win->_y[i][endx] = vert);
-	if (!win->_scroll && (win->_flags&_SCROLLWIN))
-		fp[0] = fp[endx] = lp[0] = lp[endx] = ' ';
-	touchwin(win);
+    if (vert == 0)
+        vert = ACS_VLINE;
+    if (hor == 0)
+        hor = ACS_HLINE;
+
+    int endx = win->_maxx;
+    int endy = win->_maxy - 1;
+    chtype *fp = win->_y[0];
+    chtype *lp = win->_y[endy];
+
+    for (int i = 0; i < endx; i++)
+        fp[i] = lp[i] = hor;
+    endx--;
+    for (int i = 0; i <= endy; i++)
+        win->_y[i][0] = (win->_y[i][endx] = vert);
+    if (!win->_scroll && (win->_flags & _SCROLLWIN))
+        fp[0] = fp[endx] = lp[0] = lp[endx] = win->_bkgd;
+
+    return touchwin(win);
 }

@@ -15,26 +15,23 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)getstr.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+# include	"internal.h"
 
 /*
  *	This routine gets a string starting at (_cury,_curx)
  *
  */
-int wgetstr(win,str)
-reg WINDOW	*win; 
-reg char	*str; {
-
-	while ((*str = wgetch(win)) != ERR && *str != '\n')
-		str++;
-	if (*str == ERR) {
-		*str = '\0';
-		return ERR;
-	}
-	*str = '\0';
-	return OK;
+int
+wgetstr(WINDOW *win, char *str)
+{
+/* TODO: handle backspace/left arrow and possibly echo
+but dont move before cur xy? */
+    while ((*str = wgetch(win)) != ERR && *str != '\n')
+        str++;
+    if (*str == ERR) {
+        *str = '\0';
+        return ERR;
+    }
+    *str = '\0';
+    return OK;
 }

@@ -15,28 +15,25 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)move.c	5.4 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
 
-# include	"curses.ext"
-
-/*
- *	This routine moves the cursor to the given point
- *
+/**
+ * This routine moves the cursor to the given point
  */
-int wmove(win, y, x)
-reg WINDOW	*win;
-reg int		y, x; {
+int
+wmove(WINDOW *win, int y, int x)
+{
+    tracev1("win=%p, y=%d, x=%d", win, y, x);
 
-# ifdef DEBUG
-	fprintf(outf, "MOVE to (%d, %d)\n", y, x);
-# endif
-	if (x < 0 || y < 0)
-		return ERR;
-	if (x >= win->_maxx || y >= win->_maxy)
-		return ERR;
-	win->_curx = x;
-	win->_cury = y;
-	return OK;
+    if (win == NULL)
+        return ERR;
+    if (x < 0 || y < 0)
+        return ERR;
+    if (x >= win->_maxx || y >= win->_maxy)
+        return ERR;
+
+    win->_curx = x;
+    win->_cury = y;
+
+    return OK;
 }

@@ -15,23 +15,13 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)addstr.c	5.4 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
 
-# include	"curses.ext"
-# include <string.h>
-
-/*
- *	This routine adds a string starting at (_cury,_curx)
- *
+/**
+ * This routine adds a string starting at (_cury,_curx)
  */
-int waddstr(win,str)
-reg WINDOW	*win; 
-reg char	*str;
+int
+waddstr(WINDOW *win, char *str)
 {
-# ifdef DEBUG
-	fprintf(outf, "WADDSTR(\"%s\")\n", str);
-# endif
-	return waddbytes(win, str, (int)strlen(str));
+    return waddbytes(win, str, -1);
 }

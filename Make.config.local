@@ -1,0 +1,5 @@
+ONLY_68K=Y
+PREFIX=/opt/m68k-atari-mintelf
+COMPILE_ELF=Y
+#Use -DTOSCOMPAT for TOS white bg and no border color changes
+CFLAGS=-Wall -Werror -Wextra #-DDEBUG -DDEBUG1 #-DDEBUG2 -DDEBUG3

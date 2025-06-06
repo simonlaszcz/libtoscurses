@@ -1,26 +1,22 @@
 /*****************************************************************************
-/*  FILE:		widgetlib.c
-/*  DATE:		August 1988.
-/*  AUTHOR:		Richard A. Culshaw.
-/*  DESCRIPTION:	Contains the code to manipulate the widget structures
-/*			and the i/o. It forms a single library that should
-/*			be linked in with all code using these widgets.
-/* DISCLAIMER:		This file is deemed to be public-domain, on the simple
-/*			provisos that this section remains in this file and
-/*			that code using it do not do so for monetary gain.
-/*			Neither the author, nor the authors employees at the
-/*			time of developing this code, accept any liability or
-/*			responsibility for the use, abuse or misuse of this
-/*			code.
-/*****************************************************************************/
+*  FILE:		widgetlib.c
+*  DATE:		August 1988.
+*  AUTHOR:		Richard A. Culshaw.
+*  DESCRIPTION:	Contains the code to manipulate the widget structures
+*			and the i/o. It forms a single library that should
+*			be linked in with all code using these widgets.
+* DISCLAIMER:		This file is deemed to be public-domain, on the simple
+*			provisos that this section remains in this file and
+*			that code using it do not do so for monetary gain.
+*			Neither the author, nor the authors employees at the
+*			time of developing this code, accept any liability or
+*			responsibility for the use, abuse or misuse of this
+*			code.
+*****************************************************************************/
 
 #include <widget.h>
-#ifdef __STDC__
 #include <stddef.h>
 #include <stdlib.h>
-#else
-typedef unsigned long size_t;
-#endif
 #include <string.h>
 #include <signal.h>
 
@@ -133,17 +129,7 @@ int    border;
     }
 }
 
-#ifdef __STDC__
 int addtochlist (int ch, int id, WIDGETTYPE type)
-#else
-int addtochlist (ch, id, type)
-/* add a new character to array of activation chars.
- * returns TRUE if successful (char not already in list) else FALSE
- */
-char   	    ch;
-int    	    id;
-WIDGETTYPE  type;	
-#endif
 {
     struct chentry  *chlist;
     struct chentry  *newentry;
@@ -171,14 +157,7 @@ WIDGETTYPE  type;
 }
 
 
-#ifdef __STDC__
 WIDGETTYPE widgettype (WIDGET ptr)
-#else
-WIDGETTYPE widgettype (ptr)
-/* given a widget pointer returns the type of widget.
- */
-WIDGET    ptr;
-#endif
 {
     struct cmdwid    *clist;
     struct tglwid    *tlist;
@@ -409,13 +388,7 @@ WIDGET widgetinput ()
 }
 
     
-#ifdef __STDC__
 void togglewidget (WIDGET id)
-#else
-void togglewidget (id)
-/* toggle widget given its id */
-WIDGET id;
-#endif
 {
     struct tglwid *list;
     int 	  i=0;
@@ -451,13 +424,7 @@ WIDGET id;
 }
 
 
-#ifdef __STDC__
 int getinput (WIDGET id)
-#else
-int getinput (id)
-/* get input from an input widget and put value into given place */
-WIDGET id;
-#endif
 {
     struct inpwid *list;	
     int 	  i = 0;
@@ -896,13 +863,7 @@ char    *info;
     }
 }
 
-#ifdef __STDC__
 int tsttglwidget (WIDGET ptr)
-#else
-int tsttglwidget (ptr)
-/* return the index value of the current state of the given toggle widget */
-WIDGET ptr;
-#endif
 {
     struct tglwid *list;
     int		  i=0;
@@ -941,13 +902,7 @@ int ch;
     }
 }
 
-#ifdef __STDC__
 void killcmdwidget (WIDGET ptr)
-#else
-void killcmdwidget (ptr)
-/* kill a command widget given a valid pointer */
-WIDGET ptr;
-#endif
 {
     struct cmdwid    *clist;
     struct cmdwid    *previous;
@@ -979,13 +934,7 @@ WIDGET ptr;
     }
 }
 
-#ifdef __STDC__
 void killlblwidget (WIDGET ptr)
-#else
-void killlblwidget (ptr)
-/* kill label widget given a valid pointer */
-WIDGET ptr;
-#endif
 {
     struct lblwid    *clist;
     struct lblwid    *previous;
@@ -1015,13 +964,7 @@ WIDGET ptr;
     }
 }
 
-#ifdef __STDC__
 void killtglwidget (WIDGET ptr)
-#else
-void killtglwidget (ptr)
-/* kill toggle widget given a valid pointer */
-WIDGET ptr;
-#endif
 {
     struct tglwid    *clist;
     struct tglwid    *previous;
@@ -1053,13 +996,7 @@ WIDGET ptr;
     }
 }
 
-#ifdef __STDC__
 void killinpwidget (WIDGET ptr)
-#else
-void killinpwidget (ptr)
-/* kill an input widget given a valid pointer */
-WIDGET ptr;
-#endif
 {
     struct inpwid    *clist;
     struct inpwid    *previous;
@@ -1091,13 +1028,7 @@ WIDGET ptr;
     }
 }
 	
-#ifdef __STDC__
 int killwidget (WIDGET ptr)
-#else
-int killwidget (ptr)
-/* kills the widget identified by ptr */
-WIDGET ptr;
-#endif
 {
     switch (widgettype (ptr)) {
         case CMD : killcmdwidget (ptr);    /* command widget */
@@ -1116,15 +1047,7 @@ WIDGET ptr;
     }
 }
 
-#ifdef __STDC__
 int chactive (WIDGET ptr, int boolean, int blank)
-#else
-int chactive (ptr, boolean, blank)
-/* given a widget ptr and a boolean value will activate/deactivate a widget */
-WIDGET ptr;
-int boolean;
-int blank;
-#endif
 {
     struct cmdwid *clist;
     struct tglwid *tlist;
@@ -1175,13 +1098,7 @@ int blank;
 	}
 }
 
-#ifdef __STDC__
 int activate (WIDGET ptr)
-#else
-int activate (ptr)
-/* reactivate a widget given its ptr */
-WIDGET ptr;
-#endif
 {
     int boolean;
 
@@ -1190,26 +1107,12 @@ WIDGET ptr;
     return boolean;
 }
 
-#ifdef __STDC__
 int deactivate (WIDGET ptr, int blank)
-#else
-int deactivate (ptr, blank)
-/* deactivates a widget given its ptr */
-WIDGET ptr;
-int    blank;
-#endif
 {
     return (chactive (ptr, FALSE, blank));
 }
 
-#ifdef __STDC__
 int light (WIDGET ptr, int boolean)
-#else
-int light (ptr, boolean)
-/* will highlight or dehighlight a given widget */
-WIDGET ptr;
-int boolean;
-#endif
 {
     struct cmdwid *clist;
     struct tglwid *tlist;
@@ -1259,24 +1162,12 @@ int boolean;
 	return FALSE;
 }
 
-#ifdef __STDC__
 int highlight (WIDGET ptr)
-#else
-int highlight (ptr)
-/* highlights the given ACTIVE widget */
-WIDGET ptr;
-#endif
 {
     return (light (ptr, TRUE));
 }
 
-#ifdef __STDC__
 int dehighlight (WIDGET ptr)
-#else
-int dehighlight (ptr)
-/* dehighlights the given ACTIVE widget */
-WIDGET ptr;
-#endif
 {
     return (light (ptr, FALSE));
 }
@@ -1346,14 +1237,7 @@ void home ()
     widy = y;
 }
 
-#ifdef __STDC__
 int changelblwidget (WIDGET ptr, char info[], int pos)
-#else
-int changelblwidget (ptr, info, pos)
-WIDGET ptr;
-char   info[];
-int    pos;
-#endif
 {
     struct lblwid *list = lbllist;
     int		  length = 0;

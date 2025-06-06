@@ -15,36 +15,23 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)clrtobot.c	5.4 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
 
-# include	"curses.ext"
+int
+wclrtobot(WINDOW *win)
+{
+    tracev1("win=%p", win);
 
-/*
- *	This routine erases everything on the window.
- *
- */
-void wclrtobot(win)
-reg WINDOW	*win; {
+    if (win == NULL)
+        return ERR;
+    if (wclrtoeol(win) == ERR)
+        return ERR;
 
-	reg int		y;
-	reg char	*sp, *end, *maxx;
-	reg int		startx, minx;
+    int y1 = win->_cury + 1;
 
-	startx = win->_curx;
-	for (y = win->_cury; y < win->_maxy; y++) {
-		minx = _NOCHANGE;
-		end = &win->_y[y][win->_maxx];
-		for (sp = &win->_y[y][startx]; sp < end; sp++)
-			if (*sp != ' ') {
-				maxx = sp;
-				if (minx == _NOCHANGE)
-					minx = sp - win->_y[y];
-				*sp = ' ';
-			}
-		if (minx != _NOCHANGE)
-			touchline(win, y, minx, (int)(maxx - &win->_y[y][0]));
-		startx = 0;
-	}
+    for (int y = y1; y < win->_maxy; ++y)
+        for (int x = 0; x < win->_maxx; ++x)
+            win->_y[y][x] = win->_bkgd;
+
+    return touchline(win, y1, win->_maxy - y1);
 }

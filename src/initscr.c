@@ -15,68 +15,48 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)initscr.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
-# include	<signal.h>
-# include	<unistd.h>
-
-__EXTERN char	*getenv __PROTO((const char *));
+#include "internal.h"
+#include <stdlib.h>
+#include <xyzst/xyz.h>
+#include "vt52.h"
 
 /*
- *	This routine initializes the current and standard screen.
+ * This routine initializes the current and standard screen.
  *
  */
 WINDOW *
-initscr() {
+initscr(void)
+{
+#ifdef DEBUG
+    xyz_trace_file = fopen("ctrace.txt", "wt");
+#endif
 
-	reg char	*sp;
-	void		tstp __PROTO((void));
-	int 		nfd;
+    struct xyz_con_info con;
+    if (xyz_get_con_info(&con) == XYZ_OK) {
+        LINES = con.lines;
+        COLS = con.cols;
+    }
+    else {
+        LINES = 25;
+        COLS = 80;
+    }
+    SANE();
 
-# ifdef DEBUG
-	fprintf(outf, "INITSCR()\n");
-# endif
-	if (My_term)
-		setterm(Def_term);
-	else {
-		for (_tty_ch = 0; _tty_ch < nfd; _tty_ch++)
-			if (isatty(_tty_ch))
-				break;
-		gettmode();
-		if ((sp = getenv("TERM")) == NULL)
-			sp = Def_term;
-		setterm(sp);
-# ifdef DEBUG
-		fprintf(outf, "INITSCR: term = %s\n", sp);
-# endif
-	}
-	_puts(TI);
-	_puts(VS);
-# if defined(SIGTSTP) && defined(__MINT__)
-	signal(SIGTSTP, (__Sigfunc) tstp);
-# endif
-	if (curscr != NULL) {
-# ifdef DEBUG
-		fprintf(outf, "INITSCR: curscr = 0%o\n", curscr);
-# endif
-		delwin(curscr);
-	}
-# ifdef DEBUG
-	fprintf(outf, "LINES = %d, COLS = %d\n", LINES, COLS);
-# endif
-	if ((curscr = newwin(LINES, COLS, 0, 0)) == ERR)
-		return ERR;
-	clearok(curscr, TRUE);
-	curscr->_flags &= ~_FULLLINE;
-	if (stdscr != NULL) {
-# ifdef DEBUG
-		fprintf(outf, "INITSCR: stdscr = 0%o\n", stdscr);
-# endif
-		delwin(stdscr);
-	}
-	stdscr = newwin(LINES, COLS, 0, 0);
-	return stdscr;
+    if (curscr != NULL && delwin(curscr) == ERR)
+        abend("Failed to delete curscr");
+    if ((curscr = newwin(LINES, COLS, 0, 0)) == NULL)
+        abend("Failed to create curscr");
+
+    clearok(curscr, TRUE);
+    curscr->_flags &= ~_FULLLINE;
+
+    if (stdscr != NULL && delwin(stdscr) == ERR)
+        abend("Failed to delete stdscr");
+    if ((stdscr = newwin(LINES, COLS, 0, 0)) == NULL)
+        abend("Failed to create stdscr");
+
+    init_getch();
+    init_color();
+
+    return stdscr;
 }

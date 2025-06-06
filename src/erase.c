@@ -15,39 +15,25 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)erase.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+#include "internal.h"
 
 /*
- *	This routine erases everything on the window.
+ * This routine erases everything on the window.
  *
  */
-void werase(win)
-reg WINDOW	*win; {
+int
+werase(WINDOW *win)
+{
+    tracev1("win=%p", win);
 
-	reg int		y;
-	reg char	*sp, *end, *start, *maxx;
-	reg int		minx;
+    if (win == NULL)
+        return ERR;
 
-# ifdef DEBUG
-	fprintf(outf, "WERASE(%0.2o)\n", win);
-# endif
-	for (y = 0; y < win->_maxy; y++) {
-		minx = _NOCHANGE;
-		start = win->_y[y];
-		end = &start[win->_maxx];
-		for (sp = start; sp < end; sp++)
-			if (*sp != ' ') {
-				maxx = sp;
-				if (minx == _NOCHANGE)
-					minx = sp - start;
-				*sp = ' ';
-			}
-		if (minx != _NOCHANGE)
-			touchline(win, y, minx, (int)(maxx - win->_y[y]));
-	}
-	win->_curx = win->_cury = 0;
+    for (int y = 0; y < win->_maxy; ++y)
+        for (int x = 0; x < win->_maxx; ++x)
+            win->_y[y][x] = win->_bkgd;
+
+    win->_curx = win->_cury = 0;
+
+    return touchwin(win);
 }

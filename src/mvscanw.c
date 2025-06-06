@@ -15,44 +15,40 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)mvscanw.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
+#include "internal.h"
+#include <stdarg.h>
 
-# include	"curses.ext"
-# include	<stdarg.h>
-
-/*
- * implement the mvscanw commands.  Due to the variable number of
- * arguments, they cannot be macros.  Another sigh....
- *
- */
-
-#ifdef __STDC__
-int mvscanw(int y, int x, char *fmt, ...)
-#else
-int mvscanw(y, x, fmt)
-reg int		y, x;
-char		*fmt;
-#endif
+int
+mvscanw(int y, int x, char *fmt, ...)
 {
-    va_list argp;
+    tracev1("y=%d, x=%d", y, x);
+    int rv = ERR;
 
-    va_start(argp, fmt);
-    return move(y, x) == OK ? _sscans(stdscr, fmt, argp) : ERR;
+    if (move(y, x) == OK) {
+        va_list argp;
+        va_start(argp, fmt);
+        rv = _sscans(stdscr, fmt, argp);
+        va_end(argp);
+    }
+
+    return rv;
 }
 
-#ifdef __STDC__
-int mvwscanw(WINDOW *win, int y, int x, char *fmt, ...)
-#else
-int mvwscanw(win, y, x, fmt)
-reg WINDOW	*win;
-reg int		y, x;
-char		*fmt;
-#endif
+int
+mvwscanw(WINDOW *win, int y, int x, char *fmt, ...)
 {
-    va_list argp;
-    
-    va_start(argp, fmt);
-    return wmove(win, y, x) == OK ? _sscans(win, fmt, argp) : ERR;
+    tracev1("win=%p, y=%d, x=%d", win, y, x);
+
+    if (win == NULL)
+        return ERR;
+    int rv = ERR;
+
+    if (wmove(win, y, x) == OK) {
+        va_list argp;
+        va_start(argp, fmt);
+        rv = _sscans(win, fmt, argp);
+        va_end(argp);
+    }
+
+    return rv;
 }

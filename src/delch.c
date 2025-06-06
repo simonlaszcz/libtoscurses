@@ -15,29 +15,30 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)delch.c	5.3 (Berkeley) 6/30/88";
-#endif /* not lint */
-
-# include	"curses.ext"
+#include "internal.h"
 
 /*
- *	This routine performs an insert-char on the line, leaving
+ *	This routine performs an delete-char on the line, leaving
  * (_cury,_curx) unchanged.
  *
  */
-int wdelch(win)
-reg WINDOW	*win; {
+int
+wdelch(WINDOW *win)
+{
+    tracev1("win=%p", win);
 
-	reg char	*temp1, *temp2;
-	reg char	*end;
+    if (win == NULL)
+        return ERR;
 
-	end = &win->_y[win->_cury][win->_maxx - 1];
-	temp1 = &win->_y[win->_cury][win->_curx];
-	temp2 = temp1 + 1;
-	while (temp1 < end)
-		*temp1++ = *temp2++;
-	*temp1 = ' ';
-	touchline(win, win->_cury, win->_curx, win->_maxx - 1);
-	return OK;
+    chtype *end = &(win->_y[win->_cury][win->_maxx - 1]);
+    chtype *temp1 = &(win->_y[win->_cury][win->_curx]);
+    chtype *temp2 = temp1 + sizeof(chtype);
+
+    while (temp1 < end)
+        *temp1++ = *temp2++;
+    *temp1 = win->_bkgd;
+
+    touchline(win, win->_cury, 1);
+
+    return OK;
 }
