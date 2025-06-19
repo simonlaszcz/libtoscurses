@@ -5,7 +5,7 @@
 #include <mint/sysvars.h>
 #include <time.h>
 
-#define CODE(kb,sc)     (long)((kb<<24)|(sc<<16))
+#define CODE(kb,sc)     (long)(((long)kb<<24)|((long)sc<<16))
 
 #define KB_RSHIFT       (1)
 #define KB_LSHIFT       (2)
