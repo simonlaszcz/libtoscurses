@@ -26,7 +26,7 @@ ONLY_68K=N
 BUILD_CF=Y
 BUILD_FAST=$(shell if $(CC) -mfastcall -E - < /dev/null >/dev/null 2>&1; then echo Y; else echo N; fi)
 BUILD_SOFT_FLOAT=Y
-BUILD_SHORT=N
+BUILD_SHORT=Y
 COMPILE_ELF=Y
 
 -include Make.config
@@ -39,9 +39,8 @@ else
 endif
 
 CFLAGS+=\
-	-Os -s \
+	-Os \
 	-fomit-frame-pointer \
-	-L/opt/m68k-atari-mintelf/lib \
 	-lxyzst
 	
 CC=$(CROSSPREFIX)gcc
@@ -102,7 +101,7 @@ all:$(patsubst %,%/$(APP),$(TRGTDIRS))
 # multilib flags
 #
 define MULTILIBFLAGS_TEMPLATE
-$(BUILDDIR)/$(1)/%: CFLAGS += $(call MULTILIBFLAGS,$(1))
+$(BUILDDIR)/$(1)/%: CFLAGS += $(call MULTILIBFLAGS,$(1)) -L/opt/m68k-atari-mintelf/lib/$(1)
 endef
 $(foreach DIR,$(MULTILIBDIRS),$(eval $(call MULTILIBFLAGS_TEMPLATE,$(DIR))))
 
