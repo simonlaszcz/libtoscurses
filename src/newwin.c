@@ -28,7 +28,7 @@ WINDOW *
 newwin(int num_lines, int num_cols, int begy, int begx)
 {
     tracev1("lines=%d, cols=%d, y=%d, x=%d", num_lines, num_cols, begy, begx);
-    WINDOW	*win = NULL;
+    WINDOW *win = NULL;
 
     if (num_lines == 0)
         num_lines = LINES - begy;
@@ -76,7 +76,8 @@ ret_null:
 WINDOW *
 subwin(WINDOW *orig, int num_lines, int num_cols, int begy, int begx)
 {
-    tracev1("orig=%p, num_lines=%d, num_cols=%d, begy=%d, begx=%d", orig, num_lines, num_cols, begy, begx);
+    tracev1("orig=%p, num_lines=%d, num_cols=%d, begy=%d, begx=%d",
+        orig, num_lines, num_cols, begy, begx);
     WINDOW *win = NULL;
 
     /*
@@ -130,8 +131,8 @@ makenew(int num_lines, int num_cols, int begy, int begx)
 
     _swflags_(win);
     tracev1("clear=%d, leave=%d, scroll=%d, flags=%d, maxy=%d, max=%d, begy=%d, begx=%d",
-        win->_clear, win->_leave, win->_scroll, win->_flags,
-        win->_maxy, win->_maxx, win->_begy, win->_begx);
+            win->_clear, win->_leave, win->_scroll, win->_flags, win->_maxy, win->_maxx, win->_begy,
+            win->_begx);
 
     return win;
 
@@ -167,7 +168,7 @@ void
 _swflags_(WINDOW *win)
 {
     tracev1("win=%p", win);
-    win->_flags &= ~(_ENDLINE|_FULLLINE|_FULLWIN|_SCROLLWIN);
+    win->_flags &= ~(_ENDLINE | _FULLLINE | _FULLWIN | _SCROLLWIN);
 
     if (win->_begx + win->_maxx == COLS) {
         win->_flags |= _ENDLINE;

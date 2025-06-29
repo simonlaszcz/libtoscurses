@@ -16,11 +16,10 @@ curs_set(int visibility)
 
     switch (visibility) {
     case 0:
-        CURSOR(false);
+        Cursconf(CURS_HIDE, 0);
         break;
     default:
-        CURSOR(true);
-        Cursconf(CURS_NOBLINK, 0);
+        Cursconf(CURS_SHOW, 0);
         break;
     }
 

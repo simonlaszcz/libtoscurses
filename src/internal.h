@@ -22,9 +22,9 @@
 #define NULLCH '\0'
 #endif
 
-extern bool     _echoit, _rawmode, _pfast;
-extern int      LINES, COLS, COLORS, COLOR_PAIRS, ESCDELAY, TABSIZE;
-extern long     _ttyflags;
+extern bool _echoit, _rawmode, _pfast;
+extern int LINES, COLS, COLORS, COLOR_PAIRS, ESCDELAY, TABSIZE;
+extern long _ttyflags;
 
 #ifdef DEBUG
 #define TRCOLOR(ch) ((char)((ch & A_COLOR) >> NCURSES_ATTR_SHIFT))
@@ -51,19 +51,19 @@ extern long     _ttyflags;
         (S) &= ~(at);\
     }}
 
-__EXTERN void		_id_subwins __PROTO((WINDOW *));
-__EXTERN void		_set_subwin_ __PROTO((WINDOW *, WINDOW *));
-__EXTERN int 		_sprintw __PROTO((WINDOW *, char *, char *));
-__EXTERN int 		_sscans __PROTO((WINDOW *, char *, ...));
-__EXTERN void		_swflags_ __PROTO((WINDOW *));
+__EXTERN void _id_subwins __PROTO((WINDOW *));
+__EXTERN void _set_subwin_ __PROTO((WINDOW *, WINDOW *));
+__EXTERN int _sprintw __PROTO((WINDOW *, char *, char *));
+__EXTERN int _sscans __PROTO((WINDOW *, char *, ...));
+__EXTERN void _swflags_ __PROTO((WINDOW *));
 
 void init_getch(void);
 void restore_getch(void);
 void init_color(void);
 void restore_color(void);
-int do_scroll(WINDOW *win, int top, int bottom, int n);
+int do_scroll(WINDOW * win, int top, int bottom, int n);
 int tos_pair_content(short pair, short *f, short *b);
-void sync_bg(WINDOW *win);
+void sync_bg(WINDOW * win);
 short screen_bg_color(void);
 short screen_bg_tos_color(void);
 

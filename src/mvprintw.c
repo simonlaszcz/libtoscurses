@@ -15,8 +15,8 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
-# include <stdarg.h>
+#include "internal.h"
+#include <stdarg.h>
 
 /*
  * implement the mvprintw commands.  Due to the variable number of
@@ -24,26 +24,28 @@
  *
  */
 
-int mvprintw(int y, int x, char *fmt, ...)
+int
+mvprintw(int y, int x, char *fmt, ...)
 {
-    char	buf[512];
+    char buf[512];
     va_list argp;
 
     if (move(y, x) != OK)
         return ERR;
     va_start(argp, fmt);
-    (void) vsprintf(buf, fmt, argp);
+    (void)vsprintf(buf, fmt, argp);
     return waddstr(stdscr, buf);
 }
 
-int mvwprintw(WINDOW *win, int y, int x, char *fmt, ...)
+int
+mvwprintw(WINDOW *win, int y, int x, char *fmt, ...)
 {
-    char	buf[512];
+    char buf[512];
     va_list argp;
 
     if (move(y, x) != OK)
         return ERR;
     va_start(argp, fmt);
-    (void) vsprintf(buf, fmt, argp);
+    (void)vsprintf(buf, fmt, argp);
     return waddstr(win, buf);
 }

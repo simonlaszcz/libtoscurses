@@ -15,19 +15,20 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
+#include "internal.h"
 
 /*
  * _id_subwins:
- *	Re-sync the pointers to _y for all the subwindows.
+ * Re-sync the pointers to _y for all the subwindows.
  *
  */
-void _id_subwins(orig)
-register WINDOW	*orig;
+void
+_id_subwins(orig)
+register WINDOW *orig;
 {
-    register WINDOW	*win;
-    register int	realy;
-    register int	y, oy;
+    register WINDOW *win;
+    register int realy;
+    register int y, oy;
 
     realy = orig->_begy + orig->_cury;
     for (win = orig->_nextp; win != orig; win = win->_nextp) {

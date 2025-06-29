@@ -17,21 +17,22 @@
 
 #include <toscurses/curses.h>
 
-WINDOW	*stdscr		= NULL,
-        *curscr		= NULL;
-bool	_echoit		= true,		/* set if stty indicates ECHO */
-        _rawmode	= false,	/* set if stty indicates RAW mode */
-        _pfast      = false;
-long    _ttyflags   = 0;
+WINDOW *stdscr = NULL;
+WINDOW *curscr = NULL;
 
-int	LINES,			/* number of lines allowed on screen	*/
-    COLS,			/* number of columns allowed on screen	*/
-    COLORS,
-    COLOR_PAIRS,
-    ESCDELAY = 0,
-    TABSIZE = 8;
+bool _echoit = true;            /* set if stty indicates ECHO */
+bool _rawmode = false;          /* set if stty indicates RAW mode */
+bool _pfast = false;
+long _ttyflags = 0;
+
+int LINES;                      /* number of lines allowed on screen    */
+int COLS;                       /* number of columns allowed on screen  */
+int COLORS;
+int COLOR_PAIRS;
+int ESCDELAY = 0;
+int TABSIZE = 8;
 
 #ifdef DEBUG
 /* debug output file */
-FILE	*xyz_trace_file = NULL;
+FILE *xyz_trace_file = NULL;
 #endif

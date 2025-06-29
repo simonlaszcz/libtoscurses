@@ -15,8 +15,9 @@ newpad(UNUSED int nlines, UNUSED int ncols)
 }
 
 int
-copywin(UNUSED const WINDOW *srcwin, UNUSED WINDOW *dstwin, UNUSED int sminrow, UNUSED int smincol, 
-    UNUSED int dminrow, UNUSED int dmincol, UNUSED int dmaxrow, UNUSED int dmaxcol, UNUSED int overlay)
+copywin(UNUSED const WINDOW *srcwin, UNUSED WINDOW *dstwin, UNUSED int sminrow, UNUSED int smincol,
+        UNUSED int dminrow, UNUSED int dmincol, UNUSED int dmaxrow, UNUSED int dmaxcol,
+        UNUSED int overlay)
 {
     NOT_IMPLEMENTED("Only used for screen resize which isn't handled by TOS Frotz");
     return ERR;

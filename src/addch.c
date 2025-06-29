@@ -36,7 +36,7 @@ waddch(WINDOW *win, const chtype c)
     switch (ch & A_CHARTEXT) {
     case '\t':
         chtype blank = ' ' | (ch & A_ATTRIBUTES);
-        int ntabs = TABSIZE-((*x)%TABSIZE);
+        int ntabs = TABSIZE - ((*x) % TABSIZE);
         for (int tc = 0; tc < ntabs; ++tc)
             if (waddch(win, blank) == ERR)
                 return ERR;
@@ -44,7 +44,7 @@ waddch(WINDOW *win, const chtype c)
     case '\n':
         if (wclrtoeol(win) == ERR)
             return ERR;
-        return do_newline(win);	
+        return do_newline(win);
     case '\r':
         *x = 0;
         break;
@@ -72,7 +72,7 @@ waddch(WINDOW *win, const chtype c)
         if (*x < win->_maxx - 1)
             ++(*x);
         else
-            return do_newline(win);	
+            return do_newline(win);
         break;
     }
 

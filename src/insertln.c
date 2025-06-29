@@ -18,7 +18,7 @@
 #include "internal.h"
 
 /*
- *	This routine performs an insert-line on the window, leaving
+ * This routine performs an insert-line on the window, leaving
  * (_cury,_curx) unchanged.
  *
  */
@@ -31,7 +31,7 @@ winsertln(WINDOW *win)
         return ERR;
 
     chtype *temp = win->_y[win->_maxy - 1];
-    int	y = 0;
+    int y = 0;
 
     for (y = win->_maxy - 1; y > win->_cury; --y) {
         if (win->_orig == NULL)
@@ -45,7 +45,7 @@ winsertln(WINDOW *win)
     else
         temp = win->_y[y];
 
-    for (chtype *end = &temp[win->_maxx]; temp < end; )
+    for (chtype *end = &temp[win->_maxx]; temp < end;)
         *temp++ = win->_bkgd;
 
     if (touchline(win, win->_cury, win->_maxy - win->_cury) == ERR)

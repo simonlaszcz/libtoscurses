@@ -15,33 +15,33 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
-# include	<ctype.h>
+#include "internal.h"
+#include <ctype.h>
 
-# define	min(a,b)	(a < b ? a : b)
-# define	max(a,b)	(a > b ? a : b)
+#define min(a,b)    (a < b ? a : b)
+#define max(a,b)    (a > b ? a : b)
 
 /*
- *	This routine writes win1 on win2 non-destructively.
+ * This routine writes win1 on win2 non-destructively.
  *
  */
 void
 overlay(WINDOW *win1, WINDOW *win2)
 {
-    reg chtype	*sp, *end;
-    reg int		x, y, endy, endx, starty, startx;
-    reg int 	y1,y2;
+    reg chtype *sp, *end;
+    reg int x, y, endy, endx, starty, startx;
+    reg int y1, y2;
 
-# ifdef DEBUGL1
+#ifdef DEBUGL1
     fprintf(outf, "OVERLAY(%0.2o, %0.2o);\n", win1, win2);
-# endif
+#endif
     starty = max(win1->_begy, win2->_begy);
     startx = max(win1->_begx, win2->_begx);
     endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
     endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
-# ifdef DEBUGL1
+#ifdef DEBUGL1
     fprintf(outf, "OVERLAY:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
-# endif
+#endif
     if (starty >= endy || startx >= endx)
         return;
     y1 = starty - win1->_begy;

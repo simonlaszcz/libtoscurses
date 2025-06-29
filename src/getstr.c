@@ -15,10 +15,10 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
+#include "internal.h"
 
 /*
- *	This routine gets a string starting at (_cury,_curx)
+ * This routine gets a string starting at (_cury,_curx)
  *
  */
 int

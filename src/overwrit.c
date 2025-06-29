@@ -15,38 +15,39 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
-# include	<ctype.h>
+#include "internal.h"
+#include <ctype.h>
 
-# define	min(a,b)	(a < b ? a : b)
-# define	max(a,b)	(a > b ? a : b)
+#define min(a,b)    (a < b ? a : b)
+#define max(a,b)    (a > b ? a : b)
 
 /*
- *	This routine writes win1 on win2 destructively.
+ * This routine writes win1 on win2 destructively.
  *
  */
-int overwrite(win1, win2)
-reg WINDOW	*win1, *win2; {
+int
+overwrite(win1, win2)
+reg WINDOW *win1, *win2;
+{
 
-    reg int		x, y, endy, endx, starty, startx;
+    reg int x, y, endy, endx, starty, startx;
 
-# ifdef DEBUGL1
+#ifdef DEBUGL1
     fprintf(outf, "OVERWRITE(%0.2o, %0.2o);\n", win1, win2);
-# endif
+#endif
     starty = max(win1->_begy, win2->_begy);
     startx = max(win1->_begx, win2->_begx);
     endy = min(win1->_maxy + win1->_begy, win2->_maxy + win2->_begx);
     endx = min(win1->_maxx + win1->_begx, win2->_maxx + win2->_begx);
     if (starty >= endy || startx >= endx)
         return ERR;
-# ifdef DEBUGL1
+#ifdef DEBUGL1
     fprintf(outf, "OVERWRITE:from (%d,%d) to (%d,%d)\n", starty, startx, endy, endx);
-# endif
+#endif
     x = endx - startx;
     for (y = starty; y < endy; y++) {
         bcopy(&win1->_y[y - win1->_begy][startx - win1->_begx],
-              &win2->_y[y - win2->_begy][startx - win2->_begx], 
-              (size_t)x);
+              &win2->_y[y - win2->_begy][startx - win2->_begx], (size_t)x);
     }
 
     return touchline(win2, starty, endy - starty);

@@ -40,7 +40,7 @@ wclrtoeol(WINDOW *win)
 
     chidx = win->_curx + win->_ch_off;
     if (win->_firstch[win->_cury] == _NOCHANGE || chidx < win->_firstch[win->_cury])
-        win->_firstch[win->_cury] = chidx; 
+        win->_firstch[win->_cury] = chidx;
 
     tracev1("win=%p, firstch=%d, lastch=%d",
         win,

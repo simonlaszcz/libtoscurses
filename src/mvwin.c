@@ -15,19 +15,21 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-# include	"internal.h"
+#include "internal.h"
 
 /*
  * relocate the starting position of a window
  *
  */
 
-int mvwin(win, by, bx)
-reg WINDOW	*win;
-reg int		by, bx; {
+int
+mvwin(win, by, bx)
+reg WINDOW *win;
+reg int by, bx;
+{
 
-    register WINDOW	*orig;
-    register int	dy, dx;
+    register WINDOW *orig;
+    register int dy, dx;
 
     if (by + win->_maxy > LINES || bx + win->_maxx > COLS)
         return ERR;

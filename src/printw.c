@@ -19,14 +19,14 @@
 #include <stdarg.h>
 
 /*
- *	This routine implements a printf on the standard screen.
+ * This routine implements a printf on the standard screen.
  */
 int
 printw(char *fmt, ...)
 {
-    char	buf[512];
+    char buf[512];
     va_list argp;
-    
+
     va_start(argp, fmt);
     (void)vsprintf(buf, fmt, argp);
     int rv = waddstr(stdscr, buf);
@@ -36,7 +36,7 @@ printw(char *fmt, ...)
 }
 
 /*
- *	This routine implements a printf on the given window.
+ * This routine implements a printf on the given window.
  */
 int
 wprintw(WINDOW *win, char *fmt, ...)
@@ -44,9 +44,9 @@ wprintw(WINDOW *win, char *fmt, ...)
     if (win == NULL)
         return ERR;
 
-    char	buf[512];
+    char buf[512];
     va_list argp;
-    
+
     va_start(argp, fmt);
     (void)vsprintf(buf, fmt, argp);
     int rv = waddstr(win, buf);

@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 /*
- *	This routine deletes a window and releases it back to the system.
+ * This routine deletes a window and releases it back to the system.
  *
  */
 int
@@ -28,7 +28,7 @@ delwin(WINDOW *win)
     if (win == NULL)
         return ERR;
 
-    WINDOW	*wp, *np;
+    WINDOW *wp, *np;
 
     if (win->_orig == NULL) {
         /*

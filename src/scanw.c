@@ -20,7 +20,7 @@
 #include <stdarg.h>
 
 /*
- *	This routine implements a scanf on the standard screen.
+ * This routine implements a scanf on the standard screen.
  */
 int
 scanw(char *fmt, ...)
@@ -34,7 +34,7 @@ scanw(char *fmt, ...)
 }
 
 /*
- *	This routine implements a scanf on the given window.
+ * This routine implements a scanf on the given window.
  */
 int
 wscanw(WINDOW *win, char *fmt, ...)
@@ -56,68 +56,74 @@ wscanw(WINDOW *win, char *fmt, ...)
  * Schumacher's dLibs library).
  */
 
-static int sgetc(s)
-    unsigned char **s;
-    {
+static int
+sgetc(s)
+unsigned char **s;
+{
     register unsigned char c;
 
     c = *(*s)++;
-    return((c == '\0') ? EOF : c);
-    }
+    return ((c == '\0') ? EOF : c);
+}
 
-static int sungetc(c, s)
-    int c;
-    unsigned char **s;
-    {
-    if(c == EOF)
+static int
+sungetc(c, s)
+int c;
+unsigned char **s;
+{
+    if (c == EOF)
         c = '\0';
-    return(*--(*s) = c);
-    }
+    return (*--(*s) = c);
+}
 
 #ifdef __STDC__
-int _sscans(WINDOW *win, char *fmt, ...)
+int
+_sscans(WINDOW *win, char *fmt, ...)
 #else
-int _sscans(win, fmt)
-WINDOW	*win;
-char	*fmt;
+int
+_sscans(win, fmt)
+WINDOW *win;
+char *fmt;
 #endif
 {
     char buf[128], *junk;
     extern int _scanf();
     va_list argp;
-    
+
     if (wgetstr(win, buf) < 0)
         return ERR;
     va_start(argp, fmt);
     junk = buf;
-    return(_scanf(&junk, sgetc, sungetc, fmt, argp));
+    return (_scanf(&junk, sgetc, sungetc, fmt, argp));
 }
-    
-#else /* original BSD routines */
+
+#else                           /* original BSD routines */
 
 /*
- *	This routine actually executes the scanf from the window.
+ * This routine actually executes the scanf from the window.
  *
- *	This is really a modified version of "sscanf".  As such,
+ * This is really a modified version of "sscanf".  As such,
  * it assumes that sscanf interfaces with the other scanf functions
  * in a certain way.  If this is not how your system works, you
  * will have to modify this routine to use the interface that your
  * "sscanf" uses.
  */
 #ifdef __STDC__
-int _sscans(win, fmt, ...)
+int
+_sscans(win, fmt, ...)
 #else
-int _sscans(win, fmt)
-WINDOW	*win;
-char	*fmt;
+int
+_sscans(win, fmt)
+WINDOW *win;
+char *fmt;
 #endif
 {
 
-    char	buf[100];
-    FILE	junk;
+    char buf[100];
+    FILE junk;
     va_list argp;
-    
-    junk._flag = _IOREAD|_IOSTRG;
+
+    junk._flag = _IOREAD | _IOSTRG;
     junk._base = junk._ptr = buf;
     if (wgetstr(win, buf) == ERR)
         return ERR;
@@ -125,4 +131,4 @@ char	*fmt;
     junk._cnt = strlen(buf);
     return _doscan(&junk, fmt, argp);
 }
-#endif /* atarist */
+#endif                          /* atarist */

@@ -18,7 +18,7 @@
 #include "internal.h"
 
 /*
- *	This routine performs an insert-char on the line, leaving
+ * This routine performs an insert-char on the line, leaving
  * (_cury,_curx) unchanged.
  *
  */

@@ -7,7 +7,7 @@ static char ret[3] = { '\0', '\0', '\0' };
 char *
 unctrl(int ch)
 {
-    int c = ch & 0377;	/* Note 8bit chars get mapped to themselves */
+    int c = ch & 0377;          /* Note 8bit chars get mapped to themselves */
 
     if ((c < ' ') || (c == 0177)) {
         ret[0] = '^';

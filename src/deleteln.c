@@ -18,7 +18,7 @@
 #include "internal.h"
 
 /*
- *	This routine deletes a line from the screen.  It leaves
+ * This routine deletes a line from the screen.  It leaves
  * (_cury,_curx) unchanged.
  *
  */
@@ -30,7 +30,7 @@ wdeleteln(WINDOW *win)
     if (win == NULL)
         return ERR;
 
-    int	y;
+    int y;
     chtype *temp = win->_y[win->_cury];
 
     for (y = win->_cury; y < win->_maxy - 1; y++) {
@@ -45,7 +45,7 @@ wdeleteln(WINDOW *win)
     else
         temp = win->_y[y];
 
-    for (chtype *end = &(temp[win->_maxx]); temp < end; )
+    for (chtype *end = &(temp[win->_maxx]); temp < end;)
         *temp++ = win->_bkgd;
 
     touchline(win, win->_cury, win->_maxy - win->_cury);

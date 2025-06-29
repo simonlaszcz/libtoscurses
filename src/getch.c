@@ -57,45 +57,44 @@ static struct key_mapping
     int curses_code;
 }
 /* the codes returned by Crawcin() just have a scancode, i.e. no ascii code */
-key_mappings[] =
-{
-    {SC_F1,			KEY_F(1)},
-    {SC_F2,			KEY_F(2)},
-    {SC_F3,			KEY_F(3)},
-    {SC_F4,			KEY_F(4)},
-    {SC_F5,			KEY_F(5)},
-    {SC_F6,			KEY_F(6)},
-    {SC_F7,			KEY_F(7)},
-    {SC_F8,			KEY_F(8)},
-    {SC_F9,			KEY_F(9)},
-    {SC_F10,		KEY_F(10)},
-    {SC_S_F1,		KEY_F(11)},
-    {SC_S_F2,		KEY_F(12)},
-    {SC_S_F3,		KEY_F(13)},
-    {SC_S_F4,		KEY_F(14)},
-    {SC_S_F5,		KEY_F(15)},	
-    {SC_S_F6,		KEY_F(16)},
-    {SC_S_F7,		KEY_F(17)},
-    {SC_S_F8,		KEY_F(18)},
-    {SC_S_F9,		KEY_F(19)},
-    {SC_S_F10,		KEY_F(20)},
-    {SC_UP,			KEY_UP},
-    {SC_DOWN,		KEY_DOWN},
-    {SC_LEFT,		KEY_LEFT},
-    {SC_RIGHT,		KEY_RIGHT},
-    {SC_UNDO,		KEY_UNDO},
-    {SC_INSERT,		KEY_IC},
-    {SC_HOME,		KEY_HOME},
-    {SC_BACKSPACE,	KEY_BACKSPACE},
-    {SC_ENTER,		KEY_ENTER},
-    {SC_DEL,		KEY_DC},
-    {SC_S_UP,		KEY_PPAGE},
-    {SC_S_DOWN,		KEY_NPAGE},
-    {SC_S_RIGHT,	KEY_END},
-    {0,	0}
+key_mappings[] = {
+    {SC_F1,     KEY_F(1)},
+    {SC_F2,     KEY_F(2)},
+    {SC_F3,     KEY_F(3)},
+    {SC_F4,     KEY_F(4)},
+    {SC_F5,     KEY_F(5)},
+    {SC_F6,     KEY_F(6)},
+    {SC_F7,     KEY_F(7)},
+    {SC_F8,     KEY_F(8)},
+    {SC_F9,     KEY_F(9)},
+    {SC_F10,    KEY_F(10)},
+    {SC_S_F1,   KEY_F(11)},
+    {SC_S_F2,   KEY_F(12)},
+    {SC_S_F3,   KEY_F(13)},
+    {SC_S_F4,   KEY_F(14)},
+    {SC_S_F5,   KEY_F(15)},
+    {SC_S_F6,   KEY_F(16)},
+    {SC_S_F7,   KEY_F(17)},
+    {SC_S_F8,   KEY_F(18)},
+    {SC_S_F9,   KEY_F(19)},
+    {SC_S_F10,  KEY_F(20)},
+    {SC_UP,     KEY_UP},
+    {SC_DOWN,   KEY_DOWN},
+    {SC_LEFT,   KEY_LEFT},
+    {SC_RIGHT,  KEY_RIGHT},
+    {SC_UNDO,   KEY_UNDO},
+    {SC_INSERT, KEY_IC},
+    {SC_HOME,   KEY_HOME},
+    {SC_BACKSPACE, KEY_BACKSPACE},
+    {SC_ENTER,  KEY_ENTER},
+    {SC_DEL,    KEY_DC},
+    {SC_S_UP,   KEY_PPAGE},
+    {SC_S_DOWN, KEY_NPAGE},
+    {SC_S_RIGHT,KEY_END},
+    {0, 0}
 };
 
-#define GOT_CHAR		(-1)
+#define GOT_CHAR    (-1)
 
 static struct
 {
@@ -121,6 +120,7 @@ init_getch(void)
     /* disable mouse and joystick events */
     char kbs[] = {0x12, 0x1a};
     Ikbdws(1, kbs);
+    Cursconf(CURS_NOBLINK, 0);
     curs_set(1);
 }
 
@@ -145,6 +145,7 @@ restore_getch(void)
     /* enable mouse & joystick reporting */
     char kbs[] = {0x15, 0x08};
     Ikbdws(1, kbs);
+    Cursconf(CURS_BLINK, 0);
 }
 
 static int
@@ -234,7 +235,7 @@ wgetch(WINDOW *win)
         }
     }
 
-    if (_echoit && asc > 0) 
+    if (_echoit && asc > 0)
         waddch(win, asc);
 
     return val;
