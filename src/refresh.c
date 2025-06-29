@@ -31,7 +31,7 @@ static void start_color_pair(short pair, bool init);
 static void set_reverse(bool bf, bool init);
 
 static short ly, lx;
-static bool	is_curscr;
+static bool is_curscr;
 static bool was_cleared;
 
 int
@@ -49,7 +49,7 @@ wrefresh(WINDOW *win)
 
 #ifndef TOSCOMPAT
     if (win->_flags & _FULLWIN)
-       sync_bg(win);
+        sync_bg(win);
 #endif
 
     if (win->_clear || curscr->_clear || is_curscr) {
@@ -187,7 +187,7 @@ change_line(WINDOW *win, short wy)
 
     if ((win->_flags & _ENDLINE) && !is_curscr) {
         /* mvcur and clear takes 11 bytes so only clear if it's cost effective
-        allow 2 bytes leeway since we've already done the preprocessing */
+           allow 2 bytes leeway since we've already done the preprocessing */
         const int cost_threshold = 8;
         chtype *ep = &(win->_y[wy][win->_maxx - 1]);
         chtype last = *ep;
@@ -268,7 +268,7 @@ change_line(WINDOW *win, short wy)
     }
 
     /* point to curscr, or to a dummy buffer if win is curscr.
-    if pointing to dummy, ensure csp is never incremented! */
+       if pointing to dummy, ensure csp is never incremented! */
     chtype *csp = dummy;
     if (!is_curscr)
         csp = &(curscr->_y[screeny][wx + win->_begx]);
@@ -317,16 +317,16 @@ change_line(WINDOW *win, short wy)
                 else
                     PUT(*nsp & A_CHARTEXT);
                 nsp++;
-            } /* while (*nsp != *csp && wx <= lch) */
+            }                   /* while (*nsp != *csp && wx <= lch) */
 
-            if (lx == wx + win->_begx)	/* if no change */
+            if (lx == wx + win->_begx)  /* if no change */
                 break;
             lx = wx + win->_begx;
             if (lx >= COLS) {
                 lx = 0;
                 ly++;
             }
-        } /* if (*nsp != *csp) */
+        }                       /* if (*nsp != *csp) */
         else if (wx <= lch) {
             while (*nsp == *csp && wx <= lch) {
                 nsp++;

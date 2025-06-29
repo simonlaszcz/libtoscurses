@@ -4,9 +4,8 @@
 #include <osbind.h>
 #include <xyzst/xyz.h>
 
-#define UNSET	(-1)
-#define PALSZ	(16)
-#define NCOLORS	(8)
+#define UNSET   (-1)
+#define NCOLORS (8)
 
 static struct
 {
@@ -22,7 +21,7 @@ static struct
     /* dominant curses background color */
     short bg_color;
 #ifndef TOSCOMPAT
-    struct xyz_palette *saved_palette;
+    xyz_palette_t saved_palette;
 #endif
 } m;
 
@@ -42,7 +41,9 @@ init_color(void)
         m.num_colors = 2;
 
 #ifndef TOSCOMPAT
-    m.saved_palette = xyz_save_palette(PALSZ);
+    m.saved_palette = xyz_palbank0_save();
+    xyz_palbank0_standard();
+    Vsync();
     /* swap black and white */
     swap_palbg(m.num_colors - 1);
     m.bg_color = COLOR_BLACK;
@@ -68,8 +69,8 @@ start_color(void)
     trace1();
 
     /* if start_color() is called on a mono system then has_colors() has not been
-    called or was ignored. we do our best by repeating colors. let's just claim we support
-    all standard curses colors */
+       called or was ignored. we do our best by repeating colors. let's just claim we support
+       all standard curses colors */
     COLORS = NCOLORS;
     COLOR_PAIRS = NCOLORS * NCOLORS;
 
@@ -128,7 +129,7 @@ swap_palbg(int c)
     tracev1("c=%d", c);
 
     if (c != 0)
-        xyz_swap_palette_entries(0, c);
+        xyz_palbank0_swap(0, c);
 }
 #endif
 
@@ -139,36 +140,68 @@ sync_bg(WINDOW *win)
     if (!m.was_started)
         return;
 
-    short stats[NCOLORS] = {0};
-    /* find the most frequent curses bg color on screen */
-    short dominant = m.bg_color;
-    short half = (win->_maxy * win->_maxx) / 2;
+    /* match the perimeter color of the curses screen with pal0 */
 
-    for (int y = 0; y < win->_maxy; ++y) {
-        for (int x = 0; x < win->_maxx; ++x) {
-            chtype *ch = &(win->_y[y][x]);
-            short f, b;
-            if (pair_content(PAIR_NUMBER(*ch), &f, &b) == ERR)
-                continue;
+    short stats[NCOLORS] = { 0 };
+    short dominant = m.bg_color;
+    short half = win->_maxx + win->_maxy - 2;
+    short lasty = win->_maxy - 1;
+    short lastx = win->_maxx - 1;
+
+    /* horizontals */
+    for (short x = 0; x < win->_maxx && stats[dominant] < half; ++x) {
+        short f, b;
+
+        chtype *ch = &(win->_y[0][x]);
+        if (pair_content(PAIR_NUMBER(*ch), &f, &b) == OK) {
             if (*ch & A_REVERSE)
                 b = f;
-            if (b < 0 || b >= NCOLORS)
-                continue;
             ++stats[b];
             if (b != dominant && stats[b] > stats[dominant])
                 dominant = b;
-            if (stats[dominant] >= half)
-                goto done;
+        }
+
+        ch = &(win->_y[lasty][x]);
+        if (pair_content(PAIR_NUMBER(*ch), &f, &b) == OK) {
+            if (*ch & A_REVERSE)
+                b = f;
+            ++stats[b];
+            if (b != dominant && stats[b] > stats[dominant])
+                dominant = b;
         }
     }
-done:
+
+    /* verticals */
+    for (short y = 1; y < lasty && stats[dominant] < half; ++y) {
+        short f, b;
+
+        chtype *ch = &(win->_y[y][0]);
+        if (pair_content(PAIR_NUMBER(*ch), &f, &b) == OK) {
+            if (*ch & A_REVERSE)
+                b = f;
+            ++stats[b];
+            if (b != dominant && stats[b] > stats[dominant])
+                dominant = b;
+        }
+
+        ch = &(win->_y[y][lastx]);
+        if (pair_content(PAIR_NUMBER(*ch), &f, &b) == OK) {
+            if (*ch & A_REVERSE)
+                b = f;
+            ++stats[b];
+            if (b != dominant && stats[b] > stats[dominant])
+                dominant = b;
+        }
+    }
+
     /* if the dominant color is already palette index 0, then no change */
     if (m.color_map[dominant] == 0)
         return;
 
     /* else find current 0 and swap */
     int i = 0;
-    while (i < NCOLORS && m.color_map[i] != 0) ++i;
+    while (i < NCOLORS && m.color_map[i] != 0)
+        ++i;
 
     if (i == NCOLORS || i == dominant)
         return;
@@ -204,7 +237,7 @@ restore_color(void)
 #ifndef TOSCOMPAT
     /* n.b. we may save the palette before start_color() */
     if (m.saved_palette != NULL) {
-        xyz_set_palette(m.saved_palette);
+        xyz_palbank0_set(m.saved_palette);
         free(m.saved_palette);
     }
 #endif
@@ -222,8 +255,9 @@ init_pair(short pair, short f, short b)
     tracev1("pair=%d, f=%d, b=%d", pair, f, b);
 
     /* default pair 0 cannot be amended */
-    if (!(m.was_started && pair > 0 && pair < COLOR_PAIRS 
-        && f >= 0 && f < COLORS && b >= 0 && b < COLORS))
+    if (!
+        (m.was_started && pair > 0 && pair < COLOR_PAIRS && f >= 0 && f < COLORS && b >= 0
+         && b < COLORS))
         return ERR;
 
     struct color_pair *p = &(m.color_pairs[pair]);
