@@ -41,11 +41,13 @@ init_color(void)
     m.fg_palidx = 1;
 
     struct xyz_con_info con;
-    if (xyz_get_con_info(&con) == XYZ_OK) {
+    struct xyz_os_info os;
+
+    if (xyz_get_con_info(&con) == XYZ_OK && xyz_get_os_info(&os) == XYZ_OK) {
         m.num_colors = con.num_colors;
         m.fg_palidx = con.num_colors - 1;
 #ifndef TOSCOMPAT
-        if (con.is_palette_used) {
+        if (con.is_palette_used && os.type == XYZ_OS_TOS) {
             m.can_modify_palette = true;
             m.cursor_palidx = con.cursor_palidx;
             m.can_modify_cursor = con.num_colors > NCOLORS && con.cursor_palidx >= NCOLORS;
