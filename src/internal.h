@@ -66,5 +66,6 @@ int tos_pair_content(short pair, short *f, short *b);
 void sync_bg(WINDOW * win);
 short screen_bg_color(void);
 short screen_bg_tos_color(void);
+void fix_cursor_color(void);
 
 #endif

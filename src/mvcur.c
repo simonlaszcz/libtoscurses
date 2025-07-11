@@ -27,6 +27,7 @@ mvcur(UNUSED int oldrow, UNUSED int oldcol, int newrow, int newcol)
         return ERR;
 
     MVCURSOR(newrow, newcol);
+    fix_cursor_color();
 
     return OK;
 }

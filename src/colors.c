@@ -10,48 +10,63 @@
 static struct
 {
     bool was_started;
+    /* true if we can change the palette */
+    bool can_modify_palette;
+    /* true if the cursor has a separate palette entry */
+    bool can_modify_cursor;
+    /* valid when can_modify_cursor */
+    short cursor_palidx;
     short num_colors;
+    /* the last index in the palette, by default the fg */
+    short fg_palidx;
+    /* indexed by curses color, gives the corresponding tos color */
+    short color_map[NCOLORS];
+    /* dominant curses background color */
+    short bg_color;
+    xyz_palette_t saved_palette;
     struct color_pair
     {
         short fg;
         short bg;
     } *color_pairs;
-    /* indexed by curses color, gives the corresponding tos color */
-    short color_map[NCOLORS];
-    /* dominant curses background color */
-    short bg_color;
-#ifndef TOSCOMPAT
-    xyz_palette_t saved_palette;
-#endif
 } m;
 
-#ifndef TOSCOMPAT
 static void swap_palbg(int c);
-#endif
 
 void
 init_color(void)
 {
     memset(&m, 0, sizeof(m));
+    m.num_colors = 2;
+    m.fg_palidx = 1;
 
     struct xyz_con_info con;
-    if (xyz_get_con_info(&con) == XYZ_OK)
+    if (xyz_get_con_info(&con) == XYZ_OK) {
         m.num_colors = con.num_colors;
-    else
-        m.num_colors = 2;
-
+        m.fg_palidx = con.num_colors - 1;
 #ifndef TOSCOMPAT
-    m.saved_palette = xyz_palbank0_save();
-    xyz_palbank0_standard();
-    Vsync();
-    /* swap black and white */
-    swap_palbg(m.num_colors - 1);
-    m.bg_color = COLOR_BLACK;
-#else
-    m.bg_color = COLOR_WHITE;
+        if (con.is_palette_used) {
+            m.can_modify_palette = true;
+            m.cursor_palidx = con.cursor_palidx;
+            m.can_modify_cursor = con.num_colors > NCOLORS && con.cursor_palidx >= NCOLORS;
+        }
 #endif
+    }
 
-    tracev1("num_colors=%d", m.num_colors);
+    if (m.can_modify_palette) {
+        m.saved_palette = xyz_conpal_save();
+        /* white...black */
+        xyz_conpal_standard();
+        /* swap black and white */
+        swap_palbg(m.fg_palidx);
+        xyz_palette_eset(m.cursor_palidx, xyz_white());
+        m.bg_color = COLOR_BLACK;
+    }
+    else {
+        m.bg_color = COLOR_WHITE;
+    }
+
+    tracev1("num_colors=%d, can_modify_palette=%d", m.num_colors, m.can_modify_palette);
 }
 
 bool
@@ -81,17 +96,26 @@ start_color(void)
     for (int i = 0; i < COLOR_PAIRS; ++i)
         m.color_pairs[i].fg = UNSET;
 
-#ifndef TOSCOMPAT
-    m.color_pairs[0].bg = COLOR_BLACK;
-    m.color_pairs[0].fg = COLOR_WHITE;
-    m.color_map[COLOR_BLACK] = 0;
-    m.color_map[COLOR_WHITE] = m.num_colors - 1;
-#else
-    m.color_pairs[0].bg = COLOR_WHITE;
-    m.color_pairs[0].fg = COLOR_BLACK;
-    m.color_map[COLOR_BLACK] = m.num_colors - 1;
-    m.color_map[COLOR_WHITE] = 0;
-#endif
+    if (m.can_modify_palette) {
+        if (m.can_modify_cursor) {
+            /* only use NCOLORS of the palette. on a 16 color system this will
+               allow the cursor to have its own entry */
+            m.fg_palidx = NCOLORS - 1;
+            xyz_palette_eset(m.fg_palidx, xyz_white());
+            xyz_palette_eset(m.cursor_palidx, xyz_white());
+        }
+
+        m.color_pairs[0].bg = COLOR_BLACK;
+        m.color_pairs[0].fg = COLOR_WHITE;
+        m.color_map[COLOR_BLACK] = 0;
+        m.color_map[COLOR_WHITE] = m.fg_palidx;
+    }
+    else {
+        m.color_pairs[0].bg = COLOR_WHITE;
+        m.color_pairs[0].fg = COLOR_BLACK;
+        m.color_map[COLOR_BLACK] = m.fg_palidx;
+        m.color_map[COLOR_WHITE] = 0;
+    }
 
     /* only one curses color can be mapped to pal0 */
     switch (m.num_colors) {
@@ -119,25 +143,51 @@ ret_err:
     return ERR;
 }
 
+void
+fix_cursor_color(void)
+{
+    if (!(m.was_started && m.can_modify_cursor))
+        return;
+
+    chtype ch = stdscr->_y[stdscr->_cury][stdscr->_curx];
+    short f, b = m.bg_color;
+
+    if (ch & A_COLOR) {
+        if (pair_content(PAIR_NUMBER(ch), &f, &b) == ERR)
+            b = m.bg_color;
+        else if (ch & A_REVERSE)
+            b = f;
+    }
+
+    /* get an appropriate palette index number for the cursor */
+
+    switch (b) {
+    case COLOR_WHITE:
+    case COLOR_YELLOW:
+        xyz_palette_eset(m.cursor_palidx, xyz_black());
+        break;
+    default:
+        xyz_palette_eset(m.cursor_palidx, xyz_white());
+        break;
+    }
+}
+
 /*
  * swap tos color c with palette entry 0
  */
-#ifndef TOSCOMPAT
 static void
 swap_palbg(int c)
 {
     tracev1("c=%d", c);
 
-    if (c != 0)
-        xyz_palbank0_swap(0, c);
+    if (m.can_modify_palette && c != 0)
+        xyz_palette_eswap(0, c);
 }
-#endif
 
-#ifndef TOSCOMPAT
 void
 sync_bg(WINDOW *win)
 {
-    if (!m.was_started)
+    if (!(m.was_started && win != NULL && m.can_modify_palette))
         return;
 
     /* match the perimeter color of the curses screen with pal0 */
@@ -213,16 +263,12 @@ sync_bg(WINDOW *win)
     m.color_map[dominant] = tmp;
     m.bg_color = dominant;
 }
-#endif
 
 short
 screen_bg_color(void)
 {
-#ifndef TOSCOMPAT
-    return m.was_started ? m.bg_color : COLOR_BLACK;
-#else
-    return m.was_started ? m.bg_color : COLOR_WHITE;
-#endif
+    return m.was_started ? m.bg_color :
+        m.can_modify_palette ? COLOR_BLACK : COLOR_WHITE;
 }
 
 short
@@ -234,13 +280,11 @@ screen_bg_tos_color(void)
 void
 restore_color(void)
 {
-#ifndef TOSCOMPAT
     /* n.b. we may save the palette before start_color() */
     if (m.saved_palette != NULL) {
-        xyz_palbank0_set(m.saved_palette);
+        xyz_palette_set(m.saved_palette);
         free(m.saved_palette);
     }
-#endif
 
     if (!m.was_started)
         return;
@@ -255,9 +299,7 @@ init_pair(short pair, short f, short b)
     tracev1("pair=%d, f=%d, b=%d", pair, f, b);
 
     /* default pair 0 cannot be amended */
-    if (!
-        (m.was_started && pair > 0 && pair < COLOR_PAIRS && f >= 0 && f < COLORS && b >= 0
-         && b < COLORS))
+    if (!(m.was_started && pair > 0 && pair < COLOR_PAIRS && f >= 0 && f < COLORS && b >= 0 && b < COLORS))
         return ERR;
 
     struct color_pair *p = &(m.color_pairs[pair]);
