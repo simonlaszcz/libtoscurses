@@ -16,119 +16,59 @@
  */
 
 #include "internal.h"
-#include <string.h>
 #include <stdarg.h>
 
-/*
- * This routine implements a scanf on the standard screen.
- */
-int
-scanw(char *fmt, ...)
-{
-    va_list argp;
-    va_start(argp, fmt);
-    int rv = _sscans(stdscr, fmt, argp);
-    va_end(argp);
+static int do_wscanw(WINDOW *win, char *fmt, va_list argp);
 
-    return rv;
-}
-
-/*
- * This routine implements a scanf on the given window.
- */
 int
 wscanw(WINDOW *win, char *fmt, ...)
 {
+    tracev1("win=%p", win);
+
     if (win == NULL)
         return ERR;
 
     va_list argp;
     va_start(argp, fmt);
-    int rv = _sscans(win, fmt, argp);
+    int rv = do_wscanw(win, fmt, argp);
     va_end(argp);
 
     return rv;
 }
 
-#ifdef atarist
-
-/* modelled on the code from the new GCC library (originally from Dale
- * Schumacher's dLibs library).
- */
-
-static int
-sgetc(s)
-unsigned char **s;
+int
+mvwscanw(WINDOW *win, int y, int x, char *fmt, ...)
 {
-    register unsigned char c;
+    tracev1("win=%p, y=%d, x=%d", win, y, x);
 
-    c = *(*s)++;
-    return ((c == '\0') ? EOF : c);
+    if (win == NULL)
+        return ERR;
+
+    int rv = ERR;
+
+    if (wmove(win, y, x) == OK) {
+        va_list argp;
+        va_start(argp, fmt);
+        rv = do_wscanw(win, fmt, argp);
+        va_end(argp);
+    }
+
+    return rv;
 }
 
 static int
-sungetc(c, s)
-int c;
-unsigned char **s;
+do_wscanw(WINDOW *win, char *fmt, va_list argp)
 {
-    if (c == EOF)
-        c = '\0';
-    return (*--(*s) = c);
-}
+    char buf[128];
 
-#ifdef __STDC__
-int
-_sscans(WINDOW *win, char *fmt, ...)
-#else
-int
-_sscans(win, fmt)
-WINDOW *win;
-char *fmt;
-#endif
-{
-    char buf[128], *junk;
-    extern int _scanf();
-    va_list argp;
-
+    //TODO: need wngetstr
     if (wgetstr(win, buf) < 0)
         return ERR;
-    va_start(argp, fmt);
-    junk = buf;
-    return (_scanf(&junk, sgetc, sungetc, fmt, argp));
+
+    int rv = vsscanf(buf, fmt, argp);
+
+    if (rv == EOF)
+        rv = ERR;
+
+    return rv;
 }
-
-#else                           /* original BSD routines */
-
-/*
- * This routine actually executes the scanf from the window.
- *
- * This is really a modified version of "sscanf".  As such,
- * it assumes that sscanf interfaces with the other scanf functions
- * in a certain way.  If this is not how your system works, you
- * will have to modify this routine to use the interface that your
- * "sscanf" uses.
- */
-#ifdef __STDC__
-int
-_sscans(win, fmt, ...)
-#else
-int
-_sscans(win, fmt)
-WINDOW *win;
-char *fmt;
-#endif
-{
-
-    char buf[100];
-    FILE junk;
-    va_list argp;
-
-    junk._flag = _IOREAD | _IOSTRG;
-    junk._base = junk._ptr = buf;
-    if (wgetstr(win, buf) == ERR)
-        return ERR;
-    va_start(argp, fmt);
-    junk._cnt = strlen(buf);
-    return _doscan(&junk, fmt, argp);
-}
-#endif                          /* atarist */

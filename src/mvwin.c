@@ -23,11 +23,8 @@
  */
 
 int
-mvwin(win, by, bx)
-reg WINDOW *win;
-reg int by, bx;
+mvwin(WINDOW *win, int by, int bx)
 {
-
     register WINDOW *orig;
     register int dy, dx;
 

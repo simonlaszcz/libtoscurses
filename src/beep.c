@@ -1,10 +1,10 @@
 #include "internal.h"
-#include <osbind.h>
+#include "vt52.h"
 
 int
 beep(void)
 {
     trace1();
-    Cconout('\a');
+    PUT('\a');
     return OK;
 }

@@ -25,8 +25,7 @@
  *
  */
 void
-touchoverlap(win1, win2)
-reg WINDOW *win1, *win2;
+touchoverlap(WINDOW *win1, WINDOW *win2)
 {
 
     reg int endy, endx, starty, startx;

@@ -56,7 +56,6 @@ static struct key_mapping
     long code;
     int curses_code;
 }
-/* the codes returned by Crawcin() just have a scancode, i.e. no ascii code */
 key_mappings[] = {
     {SC_F1,     KEY_F(1)},
     {SC_F2,     KEY_F(2)},
@@ -93,8 +92,6 @@ key_mappings[] = {
     {SC_S_RIGHT,KEY_END},
     {0, 0}
 };
-
-#define GOT_CHAR    (-1)
 
 static struct
 {
@@ -165,7 +162,7 @@ waitchar(long ms_wait)
 {
     tracev3("ms_wait=%ld", ms_wait);
 
-    if (Cconis() == GOT_CHAR)
+    if (Cconis() == DEV_READY)
         return true;
 
     if (ms_wait == 0)
@@ -175,7 +172,7 @@ waitchar(long ms_wait)
         long cycles = ms_wait / 5;
 
         do {
-            if (Cconis() == GOT_CHAR)
+            if (Cconis() == DEV_READY)
                 return true;
             tick();
         } while (--cycles > 0);
@@ -185,7 +182,7 @@ waitchar(long ms_wait)
 
     while (true) {
         tick();
-        if (Cconis() == GOT_CHAR)
+        if (Cconis() == DEV_READY)
             return true;
     }
 
@@ -220,6 +217,7 @@ wgetch(WINDOW *win)
     if (asc > 0) {
         switch (asc) {
         case 3:     /* ^C */
+        case 4:     /* ^D */
         case 17:    /* ^Q */
         case 26:    /* *Z */
             exit(endwin() == OK ? EXIT_SUCCESS : EXIT_FAILURE);

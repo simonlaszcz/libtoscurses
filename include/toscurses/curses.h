@@ -344,14 +344,12 @@ __EXTERN WINDOW *	initscr __PROTO((void));
 __EXTERN int		mvcur __PROTO((int, int, int, int));
 __EXTERN int		mvprintw __PROTO((int, int, char *, ...));
 __EXTERN int 		mvwprintw __PROTO((WINDOW *, int, int, char *, ...));
-__EXTERN int		mvscanw __PROTO((int, int, char *, ...));
 __EXTERN int		mvwscanw __PROTO((WINDOW *, int, int, char *, ...));
 __EXTERN int		mvwin __PROTO((WINDOW *, int, int));
 __EXTERN WINDOW *	newwin __PROTO((int, int, int, int));
 __EXTERN void		overlay __PROTO((WINDOW *, WINDOW *));
 __EXTERN int		overwrite __PROTO((WINDOW *, WINDOW *));
 __EXTERN int		printw __PROTO((char *, ...));
-__EXTERN int		scanw __PROTO((char *, ...));
 __EXTERN int		setterm __PROTO((char *));
 __EXTERN WINDOW *	subwin __PROTO((WINDOW *, int, int, int, int));
 __EXTERN int		tabcol __PROTO((int, int));
@@ -388,6 +386,9 @@ __EXTERN int		init_pair __PROTO((short pair, short f, short b));
 __EXTERN int		wsetscrreg __PROTO((WINDOW *, int top, int bot));
 __EXTERN void		wbkgdset __PROTO((WINDOW *, chtype ch));
 __EXTERN int		scr_dump __PROTO((const char *filename));
+
+#define scanw(fmt, ...)         wscanw(stdscr, fmt, ...)
+#define mvscanw(y, x, fmt, ...) mvwscanw(stdscr, y, x, fmt, ...)
 
 /* not implemented */
 __EXTERN int		intrflush __PROTO((WINDOW *win, bool bf));

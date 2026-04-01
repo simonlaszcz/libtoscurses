@@ -32,7 +32,6 @@ endwin(void)
     SANE();
     PUT('\r');
     PUT('\n');
-    fflush(stdout);
 
 #ifdef DEBUG
     if (xyz_trace_file != NULL)

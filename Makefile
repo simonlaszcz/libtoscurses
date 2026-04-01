@@ -51,8 +51,9 @@ AR=$(CROSSPREFIX)ar
 RANLIB=$(CROSSPREFIX)ranlib
 
 INCLUDE=-Iinclude -I. -I/opt/m68k-atari-mintelf/include
-CSRCS= $(wildcard $(SRCDIR)/*.c)
 SRCDIR=src
+CSRCS= $(wildcard $(SRCDIR)/*.c)
+ASRCS= $(wildcard $(SRCDIR)/*.S)
 BUILDDIR=build
 
 ifneq (,$(filter $(ONLY_68K),Y yes))
@@ -80,7 +81,8 @@ LIBDIRS=$(patsubst %,$(BUILDDIR)/%,$(MULTILIBDIRS))
 OBJDIRS=$(patsubst %,%/objs,$(LIBDIRS))
 
 COBJS=$(patsubst $(SRCDIR)/%.o,%.o,$(patsubst %.c,%.o,$(CSRCS)))
-OBJS=$(COBJS)
+AOBJS=$(patsubst $(SRCDIR)/%.o,%.o,$(patsubst %.S,%.o,$(ASRCS)))
+OBJS=$(COBJS) $(AOBJS)
 
 LIBC=libtoscurses.a
 

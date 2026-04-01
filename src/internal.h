@@ -16,7 +16,6 @@
 
 #include <toscurses/curses.h>
 #include <xyzst/trace.h>
-#include "termcap.h"
 
 #ifndef NULLCH
 #define NULLCH '\0'

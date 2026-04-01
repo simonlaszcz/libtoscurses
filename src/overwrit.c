@@ -26,10 +26,8 @@
  *
  */
 int
-overwrite(win1, win2)
-reg WINDOW *win1, *win2;
+overwrite(WINDOW *win1, WINDOW *win2)
 {
-
     reg int x, y, endy, endx, starty, startx;
 
 #ifdef DEBUGL1

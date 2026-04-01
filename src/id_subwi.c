@@ -23,8 +23,7 @@
  *
  */
 void
-_id_subwins(orig)
-register WINDOW *orig;
+_id_subwins(WINDOW *orig)
 {
     register WINDOW *win;
     register int realy;

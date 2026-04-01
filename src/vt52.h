@@ -1,8 +1,11 @@
 #ifndef VT52_H
 #define VT52_H
 
-#define PUT(n)          putchar(n)
-#define ESC(n)          (putchar(27), putchar(n))
+#include "internal.h"
+#include <osbind.h>
+
+#define PUT(n)          Bconout(DEV_CONSOLE, n)
+#define ESC(n)          (PUT(27), PUT(n))
 
 #define FG(c)           (ESC('b'), PUT(c + 32))
 #define BG(c)           (ESC('c'), PUT(c + 32))
