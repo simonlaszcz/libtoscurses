@@ -1,3 +1,5 @@
+Moved to https://codeberg.org/simonlaszcz/libtoscurses
+
 This is an update of Eric Smith's port of Curses - primarily to
 facilitate an Atari TOS port of Frotz. Several functions and support
 for colour and other attributes have been added. This brings it closer
